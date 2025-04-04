@@ -46,12 +46,12 @@ enum class PlayerAnim {
 	NUM_ANIMATIONS
 };
 
-class Player: public Entity
+class Player : public Entity
 {
 public:
 	Player(const Point& p, State s, Look view);
 	~Player();
-	
+
 	AppStatus Initialise();
 	void SetTileMap(TileMap* tilemap);
 
@@ -67,13 +67,17 @@ private:
 	bool IsLookingRight() const;
 	bool IsLookingLeft() const;
 
-	//Player mechanics
+	// ?? AÑADIDO: Nueva lógica de movimiento 4 direcciones
+	void HandleMovement();
+	void SetIdleAnimation();
+
+	//Player mechanics originales
 	void MoveX();
 	void MoveY();
 	void LogicJumping();
 	void LogicClimbing();
 
-	//Animation management
+	//Animación
 	void SetAnimation(int id);
 	PlayerAnim GetAnimation();
 	void Stop();
@@ -97,12 +101,9 @@ private:
 
 	State state;
 	Look look;
+	Point dir;              // ?? ESTA VARIABLE FALTABA
 	int jump_delay;
 
-	//Reference to the TileMap object
-	//This class does not own the object, it only holds a reference to it
-	TileMap *map;
-
+	TileMap* map;
 	int score;
 };
-

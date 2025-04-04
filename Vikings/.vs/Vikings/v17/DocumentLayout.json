@@ -1,25 +1,37 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\",
+  "WorkspaceRootPath": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\dependencies\\raylib\\include\\raylib.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Player.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:src\\Player.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Player.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:src\\Player.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Object.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:src\\Object.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\dependencies\\raylib\\include\\raylib.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:dependencies\\raylib\\include\\raylib.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Globals.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Globals.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:src\\Globals.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Entity.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Entity.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{3977A628-DA9D-4402-8F7A-65D0FDE48107}|Vikings.vcxproj|solutionrelative:src\\Entity.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -30,15 +42,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "Object.h",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Object.h",
+              "RelativeDocumentMoniker": "src\\Object.h",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Object.h",
+              "RelativeToolTip": "src\\Object.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-04T07:29:34.047Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Player.h",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Player.h",
+              "RelativeDocumentMoniker": "src\\Player.h",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Player.h",
+              "RelativeToolTip": "src\\Player.h",
+              "ViewState": "AQIAAEkAAAAAAAAAAAAswGkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-04-04T07:27:08.975Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Player.cpp",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Player.cpp",
+              "RelativeDocumentMoniker": "src\\Player.cpp",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Player.cpp",
+              "RelativeToolTip": "src\\Player.cpp",
+              "ViewState": "AQIAAGQAAAAAAAAAAAAmwIkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-04T07:24:59.275Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\main.cpp",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\main.cpp",
               "RelativeDocumentMoniker": "src\\main.cpp",
-              "ToolTip": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\main.cpp",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\main.cpp",
               "RelativeToolTip": "src\\main.cpp",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
@@ -46,24 +101,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "Globals.cpp",
-              "DocumentMoniker": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Globals.cpp",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Globals.cpp",
               "RelativeDocumentMoniker": "src\\Globals.cpp",
-              "ToolTip": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Globals.cpp",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Globals.cpp",
               "RelativeToolTip": "src\\Globals.cpp",
               "ViewState": "AQIAAAkAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-14T08:48:30.466Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-14T08:48:30.466Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "Game.cpp",
-              "DocumentMoniker": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Game.cpp",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Game.cpp",
               "RelativeDocumentMoniker": "src\\Game.cpp",
-              "ToolTip": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Game.cpp",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Game.cpp",
               "RelativeToolTip": "src\\Game.cpp",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
@@ -71,11 +125,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "Entity.cpp",
-              "DocumentMoniker": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Entity.cpp",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Entity.cpp",
               "RelativeDocumentMoniker": "src\\Entity.cpp",
-              "ToolTip": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\src\\Entity.cpp",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\src\\Entity.cpp",
               "RelativeToolTip": "src\\Entity.cpp",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
@@ -83,13 +137,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "raylib.h",
-              "DocumentMoniker": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\dependencies\\raylib\\include\\raylib.h",
+              "DocumentMoniker": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\dependencies\\raylib\\include\\raylib.h",
               "RelativeDocumentMoniker": "dependencies\\raylib\\include\\raylib.h",
-              "ToolTip": "C:\\Users\\victorpo4\\Desktop\\vikings p7\\vikings p7\\vikings\\Vikings\\dependencies\\raylib\\include\\raylib.h",
+              "ToolTip": "C:\\Users\\mariotr\\Documents\\GitHub\\Pengo\\Vikings\\dependencies\\raylib\\include\\raylib.h",
               "RelativeToolTip": "dependencies\\raylib\\include\\raylib.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAKAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-02-27T10:18:34.122Z",
               "EditorCaption": ""

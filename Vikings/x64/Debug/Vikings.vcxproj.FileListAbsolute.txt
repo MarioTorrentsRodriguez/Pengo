@@ -1,2 +1,3 @@
 C:\Users\enzoam\Downloads\p7-Vikings\Vikings\x64\Debug\Vikings.exe
 C:\Users\victorpo4\Desktop\vikings p7\vikings p7\vikings\Vikings\x64\Debug\Pengo.exe
+C:\Users\mariotr\Documents\GitHub\Pengo\Vikings\x64\Debug\Pengo.exe
