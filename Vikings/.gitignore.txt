@@ -1,37 +1,65 @@
-# Archivos de VS y carpetas temporales
+# === Visual Studio ===
 .vs/
-*.user
 *.suo
+*.user
 *.userosscache
 *.sln.docstates
 *.VC.db
 *.VC.opendb
 *.ipch/
-*.dbmdl
-*.obj
-*.log
-*.pch
-*.tlog
-*.idb
-*.pdb
-*.ilk
-*.aps
-*.ncb
-*.cache
-*.log
-*.sdf
 
-# Builds
+# === Build results ===
 Debug/
 Release/
+x64/
 x64/Debug/
 x64/Release/
+*.exe
+*.obj
+*.log
+*.tlog
+*.pch
+*.idb
+*.ilk
+*.pdb
+*.lastbuildstate
 
-# Archivos temporales del sistema
+# === CMake / VS Code / Cache / Misc ===
+CMakeFiles/
+CMakeCache.txt
+*.cmake
+
+.vscode/
+*.DS_Store
+Thumbs.db
+
+# === Backups & Temp files ===
 *.tmp
 *.bak
 *.old
 *.~*
 
-# Archivos de configuración locales
-*.DotSettings.user
+# === Project-specific ===
+*.vcxproj.user
+*.aps
+*.ncb
+*.cache
+*.sdf
+*.opendb
+*.log
+*.obj
+*.ipdb
+*.iobj
+*.ipch
+*.dbmdl
+*.mdb
+*.pdb
+*.rsp
+*.tlh
+*.tli
+*.tmp
+*.tmp_proj
+*.userprefs
+
+# === Solution ===
+*.sln.docstates
