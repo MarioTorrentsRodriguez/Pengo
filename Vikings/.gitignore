@@ -1,0 +1,37 @@
+# Archivos de VS y carpetas temporales
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+*.ipch/
+*.dbmdl
+*.obj
+*.log
+*.pch
+*.tlog
+*.idb
+*.pdb
+*.ilk
+*.aps
+*.ncb
+*.cache
+*.log
+*.sdf
+
+# Builds
+Debug/
+Release/
+x64/Debug/
+x64/Release/
+
+# Archivos temporales del sistema
+*.tmp
+*.bak
+*.old
+*.~*
+
+# Archivos de configuración locales
+*.DotSettings.user
