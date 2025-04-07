@@ -76,9 +76,9 @@ AppStatus Scene::LoadLevel(int stage)
 	// Bordes
 	for (int x = 0; x < LEVEL_WIDTH; ++x) {
 		map[x] = 1; // primera fila
-		map[(LEVEL_HEIGHT - 1) * LEVEL_WIDTH + x] = 1; // última fila
+		map[(LEVEL_HEIGHT - 3) * LEVEL_WIDTH + x] = 1; // última fila
 	}
-	for (int y = 0; y < LEVEL_HEIGHT; ++y) {
+	for (int y = 0; y < (LEVEL_HEIGHT - 2); ++y) {
 		map[y * LEVEL_WIDTH] = 1;
 		map[y * LEVEL_WIDTH + LEVEL_WIDTH - 1] = 1;
 	}
