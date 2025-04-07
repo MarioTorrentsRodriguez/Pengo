@@ -33,7 +33,6 @@ Scene::~Scene()
 }
 AppStatus Scene::Init()
 {
-	//Create player
 	player = new Player({ 0,0 }, State::IDLE, Look::RIGHT);
 	if (player == nullptr)
 	{
@@ -46,7 +45,6 @@ AppStatus Scene::Init()
 		return AppStatus::ERROR;
 	}
 
-	//Create level 
 	level = new TileMap();
 	if (level == nullptr)
 	{
@@ -70,30 +68,52 @@ AppStatus Scene::Init()
 AppStatus Scene::LoadLevel(int stage)
 {
 	int size = LEVEL_WIDTH * LEVEL_HEIGHT;
-	int* map = nullptr;
-	if (stage == 1 || stage == 2)
-	{
-		map = new int[size]();
-		map[LEVEL_WIDTH * (LEVEL_HEIGHT - 2) + 1] = (int)Tile::PLAYER; // poner jugador en una posición visible
-		player->InitScore();
+	int* map = new int[size];
+
+	// Inicializar con aire
+	for (int i = 0; i < size; ++i) map[i] = 0;
+
+	// Bordes
+	for (int x = 0; x < LEVEL_WIDTH; ++x) {
+		map[x] = 1; // primera fila
+		map[(LEVEL_HEIGHT - 1) * LEVEL_WIDTH + x] = 1; // última fila
 	}
-	else
-	{
-		LOG("Failed to load level, stage %d doesn't exist", stage);
+	for (int y = 0; y < LEVEL_HEIGHT; ++y) {
+		map[y * LEVEL_WIDTH] = 1;
+		map[y * LEVEL_WIDTH + LEVEL_WIDTH - 1] = 1;
+	}
+
+	// Bloques aleatorios
+	int random_blocks[] = {
+		3 + 5 * LEVEL_WIDTH,
+		7 + 10 * LEVEL_WIDTH,
+		5 + 12 * LEVEL_WIDTH,
+		9 + 14 * LEVEL_WIDTH,
+		11 + 7 * LEVEL_WIDTH,
+		6 + 17 * LEVEL_WIDTH,
+		4 + 9 * LEVEL_WIDTH,
+		8 + 3 * LEVEL_WIDTH
+	};
+	int num_blocks = sizeof(random_blocks) / sizeof(int);
+	for (int i = 0; i < num_blocks; ++i) map[random_blocks[i]] = 1;
+
+	// Posición segura para el jugador
+	int px = 2, py = 3; // abajo de la zona del score
+	map[py * LEVEL_WIDTH + px] = 100;
+
+	if (level->Load(map, LEVEL_WIDTH, LEVEL_HEIGHT) != AppStatus::OK)
 		return AppStatus::ERROR;
-	}
 
-	level->Load(map, LEVEL_WIDTH, LEVEL_HEIGHT);
-
+	// Posicionar jugador
 	for (int y = 0; y < LEVEL_HEIGHT; ++y)
 	{
 		for (int x = 0; x < LEVEL_WIDTH; ++x)
 		{
-			Tile tile = (Tile)map[y * LEVEL_WIDTH + x];
-			if (tile == Tile::PLAYER)
+			if (map[y * LEVEL_WIDTH + x] == 100)
 			{
 				Point pos = { x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE - 1 };
 				player->SetPos(pos);
+				break;
 			}
 		}
 	}
