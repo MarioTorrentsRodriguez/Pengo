@@ -23,7 +23,7 @@ AppStatus Player::Initialise()
 	const int n = PLAYER_FRAME_SIZE;
 
 	ResourceManager& data = ResourceManager::Instance();
-	if (data.LoadTexture(Resource::IMG_PLAYER, "images/eric.png") != AppStatus::OK)
+	if (data.LoadTexture(Resource::IMG_PLAYER, "images/CharAnimations.png") != AppStatus::OK)
 		return AppStatus::ERROR;
 
 	render = new Sprite(data.GetTexture(Resource::IMG_PLAYER));
