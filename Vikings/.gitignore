@@ -35,3 +35,6 @@ x64/Release/
 
 # Archivos de configuración locales
 *.DotSettings.user
+
+*log.txt
+log.txt
