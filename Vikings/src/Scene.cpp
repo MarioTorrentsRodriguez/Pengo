@@ -1,3 +1,7 @@
+// Modificaciones aplicadas:
+// - Se generan dos niveles distintos con plataformas y bordes
+// - El jugador se posiciona en una ubicación segura en ambos niveles
+
 #include "Scene.h"
 #include <stdio.h>
 #include "Globals.h"
@@ -69,37 +73,38 @@ AppStatus Scene::LoadLevel(int stage)
 {
 	int size = LEVEL_WIDTH * LEVEL_HEIGHT;
 	int* map = new int[size];
+	for (int i = 0; i < size; ++i) map[i] = 0; // aire
 
-	// Inicializar con aire
-	for (int i = 0; i < size; ++i) map[i] = 0;
-
-	// Bordes
+	// Bordes superiores e inferiores
 	for (int x = 0; x < LEVEL_WIDTH; ++x) {
-		map[x] = 1; // primera fila
-		map[(LEVEL_HEIGHT - 3) * LEVEL_WIDTH + x] = 1; // última fila
+		map[x] = 1; // fila 0
+		map[x + LEVEL_WIDTH] = 1; // fila 1
+		map[(LEVEL_HEIGHT - 1) * LEVEL_WIDTH + x] = 1; // última fila
 	}
-	for (int y = 0; y < (LEVEL_HEIGHT - 2); ++y) {
-		map[y * LEVEL_WIDTH] = 1;
-		map[y * LEVEL_WIDTH + LEVEL_WIDTH - 1] = 1;
+	for (int y = 0; y < LEVEL_HEIGHT; ++y) {
+		map[y * LEVEL_WIDTH] = 1; // izquierda
+		map[y * LEVEL_WIDTH + LEVEL_WIDTH - 1] = 1; // derecha
 	}
 
-	// Bloques aleatorios
-	int random_blocks[] = {
-		3 + 5 * LEVEL_WIDTH,
-		7 + 10 * LEVEL_WIDTH,
-		5 + 12 * LEVEL_WIDTH,
-		9 + 14 * LEVEL_WIDTH,
-		11 + 7 * LEVEL_WIDTH,
-		6 + 17 * LEVEL_WIDTH,
-		4 + 9 * LEVEL_WIDTH,
-		8 + 3 * LEVEL_WIDTH
-	};
-	int num_blocks = sizeof(random_blocks) / sizeof(int);
-	for (int i = 0; i < num_blocks; ++i) map[random_blocks[i]] = 1;
-
-	// Posición segura para el jugador
-	int px = 2, py = 3; // abajo de la zona del score
-	map[py * LEVEL_WIDTH + px] = 100;
+	// Plataformas por nivel
+	if (stage == 1 || stage == 2)
+	{
+		srand(stage * 100); // semillas distintas
+		for (int y = 5; y < LEVEL_HEIGHT - 2; y += 5)
+		{
+			int x_start = 2 + rand() % 3;
+			int width = 5 + rand() % 4;
+			for (int x = x_start; x < x_start + width && x < LEVEL_WIDTH - 1; ++x)
+				map[y * LEVEL_WIDTH + x] = 1;
+		}
+		// Jugador en posición segura
+		map[3 * LEVEL_WIDTH + 2] = 100;
+	}
+	else
+	{
+		LOG("Failed to load level, stage %d doesn't exist", stage);
+		return AppStatus::ERROR;
+	}
 
 	if (level->Load(map, LEVEL_WIDTH, LEVEL_HEIGHT) != AppStatus::OK)
 		return AppStatus::ERROR;
