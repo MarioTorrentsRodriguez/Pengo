@@ -102,7 +102,8 @@ void Player::HandleMovement()
 
 	if (dir.x < 0 && map->TestCollisionWallLeft(new_box)) pos = old_pos;
 	else if (dir.x > 0 && map->TestCollisionWallRight(new_box)) pos = old_pos;
-	else if (dir.y != 0 && map->TestCollisionGround(new_box, &next_pos.y)) pos = old_pos;
+	else if ((dir.y < 0 && map->TestCollisionWallLeft(new_box)) ||
+		(dir.y > 0 && map->TestCollisionGround(new_box, &next_pos.y))) pos = old_pos;
 	else pos = next_pos;
 }
 
