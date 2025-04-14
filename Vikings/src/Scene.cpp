@@ -1,6 +1,4 @@
-// Modificaciones aplicadas:
-// - Se generan dos niveles distintos con plataformas y bordes
-// - El jugador se posiciona en una ubicación segura en ambos niveles
+// Versión avanzada de Scene.cpp con plataformas variadas y diseño tipo arcade
 
 #include "Scene.h"
 #include <stdio.h>
@@ -73,32 +71,74 @@ AppStatus Scene::LoadLevel(int stage)
 {
 	int size = LEVEL_WIDTH * LEVEL_HEIGHT;
 	int* map = new int[size];
-	for (int i = 0; i < size; ++i) map[i] = 0; // aire
+	for (int i = 0; i < size; ++i) map[i] = 0;
 
-	// Bordes superiores e inferiores
+	// Nivel tipo Pengo (manual)
+	int layouts[2][15][15] = {
+		// Nivel 1
+		{
+			{1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,0,1,1,1,0,1,1,1,0,1},
+			{1,0,0,0,1,0,0,0,1,0,0,0,1,0,1},
+			{1,1,1,0,1,1,1,0,1,0,1,1,1,0,1},
+			{0,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,1,0,0,1},
+			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,1,1,0,1,1,1,1,1,1,1,1,0,1,1},
+			{1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,1,0,0,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{0}
+		},
+		// Nivel 2
+		{
+			{1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
+			{1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+			{1,1,1,0,1,1,1,0,1,1,1,0,1,1,1},
+			{1,0,0,1,0,0,0,0,0,0,0,1,0,0,1},
+			{1,1,1,0,1,1,1,0,1,1,1,0,1,1,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
+			{1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+			{0}
+		}
+	};
+
+	// Inicializar todo como aire
+	for (int i = 0; i < size; ++i) map[i] = 0;
+
+	// Bordes
 	for (int x = 0; x < LEVEL_WIDTH; ++x) {
-		map[x] = 1; // fila 0
-		map[x + LEVEL_WIDTH] = 1; // fila 1
-		map[(LEVEL_HEIGHT - 1) * LEVEL_WIDTH + x] = 1; // última fila
+		map[x] = 1;
+		map[x + LEVEL_WIDTH] = 1;
+		map[(LEVEL_HEIGHT - 1) * LEVEL_WIDTH + x] = 1;
 	}
 	for (int y = 0; y < LEVEL_HEIGHT; ++y) {
-		map[y * LEVEL_WIDTH] = 1; // izquierda
-		map[y * LEVEL_WIDTH + LEVEL_WIDTH - 1] = 1; // derecha
+		map[y * LEVEL_WIDTH] = 1;
+		map[y * LEVEL_WIDTH + LEVEL_WIDTH - 1] = 1;
 	}
 
-	// Plataformas por nivel
 	if (stage == 1 || stage == 2)
 	{
-		srand(stage * 100); // semillas distintas
-		for (int y = 5; y < LEVEL_HEIGHT - 2; y += 5)
+		const int (*layout)[15] = layouts[stage - 1];
+		for (int y = 0; y < 15; ++y)
 		{
-			int x_start = 2 + rand() % 3;
-			int width = 5 + rand() % 4;
-			for (int x = x_start; x < x_start + width && x < LEVEL_WIDTH - 1; ++x)
-				map[y * LEVEL_WIDTH + x] = 1;
+			for (int x = 0; x < 15; ++x)
+			{
+				int value = layout[y][x];
+				if (value == 0 && y == 0) break; // fin de layout
+				map[(y + 2) * LEVEL_WIDTH + x] = value;
+			}
 		}
-		// Jugador en posición segura
-		map[3 * LEVEL_WIDTH + 2] = 100;
 	}
 	else
 	{
