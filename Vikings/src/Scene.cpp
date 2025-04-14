@@ -1,4 +1,4 @@
-// Versión avanzada de Scene.cpp con plataformas variadas y diseño tipo arcade
+// Versión corregida de Scene.cpp - limpio y funcional con player centrado
 
 #include "Scene.h"
 #include <stdio.h>
@@ -8,16 +8,13 @@ Scene::Scene()
 {
 	player = nullptr;
 	level = nullptr;
-	enemies = nullptr;
-	shots = nullptr;
-
 	camera.target = { 0, 0 };
 	camera.offset = { 0, MARGIN_GUI_Y };
 	camera.rotation = 0.0f;
 	camera.zoom = 1.0f;
-
 	debug = DebugMode::OFF;
 }
+
 Scene::~Scene()
 {
 	if (player != nullptr)
@@ -33,31 +30,23 @@ Scene::~Scene()
 		level = nullptr;
 	}
 }
+
 AppStatus Scene::Init()
 {
 	player = new Player({ 0,0 }, State::IDLE, Look::RIGHT);
-	if (player == nullptr)
-	{
-		LOG("Failed to allocate memory for Player");
-		return AppStatus::ERROR;
-	}
-	if (player->Initialise() != AppStatus::OK)
+	if (player == nullptr || player->Initialise() != AppStatus::OK)
 	{
 		LOG("Failed to initialise Player");
 		return AppStatus::ERROR;
 	}
 
 	level = new TileMap();
-	if (level == nullptr)
-	{
-		LOG("Failed to allocate memory for Level");
-		return AppStatus::ERROR;
-	}
-	if (level->Initialise() != AppStatus::OK)
+	if (level == nullptr || level->Initialise() != AppStatus::OK)
 	{
 		LOG("Failed to initialise Level");
 		return AppStatus::ERROR;
 	}
+
 	if (LoadLevel(1) != AppStatus::OK)
 	{
 		LOG("Failed to load Level 1");
@@ -67,6 +56,7 @@ AppStatus Scene::Init()
 	player->SetTileMap(level);
 	return AppStatus::OK;
 }
+
 AppStatus Scene::LoadLevel(int stage)
 {
 	int size = LEVEL_WIDTH * LEVEL_HEIGHT;
@@ -75,7 +65,6 @@ AppStatus Scene::LoadLevel(int stage)
 
 	// Nivel tipo Pengo (manual)
 	int layouts[2][15][15] = {
-		// Nivel 1
 		{
 			{1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
 			{1,0,1,1,1,0,1,1,1,0,1,1,1,0,1},
@@ -93,7 +82,6 @@ AppStatus Scene::LoadLevel(int stage)
 			{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 			{0}
 		},
-		// Nivel 2
 		{
 			{1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
 			{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
@@ -113,9 +101,6 @@ AppStatus Scene::LoadLevel(int stage)
 		}
 	};
 
-	// Inicializar todo como aire
-	for (int i = 0; i < size; ++i) map[i] = 0;
-
 	// Bordes
 	for (int x = 0; x < LEVEL_WIDTH; ++x) {
 		map[x] = 1;
@@ -127,6 +112,7 @@ AppStatus Scene::LoadLevel(int stage)
 		map[y * LEVEL_WIDTH + LEVEL_WIDTH - 1] = 1;
 	}
 
+	// Cargar layout
 	if (stage == 1 || stage == 2)
 	{
 		const int (*layout)[15] = layouts[stage - 1];
@@ -135,7 +121,7 @@ AppStatus Scene::LoadLevel(int stage)
 			for (int x = 0; x < 15; ++x)
 			{
 				int value = layout[y][x];
-				if (value == 0 && y == 0) break; // fin de layout
+				if (value == 0 && y == 0) break;
 				map[(y + 2) * LEVEL_WIDTH + x] = value;
 			}
 		}
@@ -143,29 +129,27 @@ AppStatus Scene::LoadLevel(int stage)
 	else
 	{
 		LOG("Failed to load level, stage %d doesn't exist", stage);
+		delete[] map;
 		return AppStatus::ERROR;
 	}
 
 	if (level->Load(map, LEVEL_WIDTH, LEVEL_HEIGHT) != AppStatus::OK)
-		return AppStatus::ERROR;
-
-	// Posicionar jugador
-	for (int y = 0; y < LEVEL_HEIGHT; ++y)
 	{
-		for (int x = 0; x < LEVEL_WIDTH; ++x)
-		{
-			if (map[y * LEVEL_WIDTH + x] == 100)
-			{
-				Point pos = { x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE - 1 };
-				player->SetPos(pos);
-				break;
-			}
-		}
+		delete[] map;
+		return AppStatus::ERROR;
 	}
+
+	// Posicionar jugador al centro
+	int px = LEVEL_WIDTH / 2;
+	int py = LEVEL_HEIGHT / 2;
+	Point pos = { px * TILE_SIZE, py * TILE_SIZE + TILE_SIZE - 1 };
+	player->SetPos(pos);
+
 	level->ClearObjectEntityPositions();
 	delete[] map;
 	return AppStatus::OK;
 }
+
 void Scene::Update()
 {
 	if (IsKeyPressed(KEY_F1))
@@ -176,6 +160,7 @@ void Scene::Update()
 	level->Update();
 	player->Update();
 }
+
 void Scene::Render()
 {
 	BeginMode2D(camera);
@@ -187,11 +172,13 @@ void Scene::Render()
 	EndMode2D();
 	RenderGUI();
 }
+
 void Scene::Release()
 {
 	level->Release();
 	player->Release();
 }
+
 void Scene::RenderGUI() const
 {
 	DrawText(TextFormat("SCORE : %d", player->GetScore()), 10, 10, 8, LIGHTGRAY);
