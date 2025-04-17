@@ -26,6 +26,12 @@ TileMap::~TileMap()
 		delete laser;
 		laser = nullptr;
 	}
+	if (laser)
+	{
+		laser->Release();
+		delete laser;
+		laser = nullptr;
+	}
 }
 void TileMap::InitTileDictionary()
 {
@@ -375,10 +381,21 @@ void TileMap::Render()
 }
 void TileMap::Release()
 {
-	ResourceManager& data = ResourceManager::Instance(); 
+	ResourceManager& data = ResourceManager::Instance();
 	data.ReleaseTexture(Resource::IMG_TILES);
 
-	laser->Release();
+	if (laser != nullptr)
+	{
+		laser->Release();
+		delete laser;
+		laser = nullptr;
+	}
 
 	dict_rect.clear();
+
+	if (map != nullptr)
+	{
+		delete[] map;
+		map = nullptr;
+	}
 }

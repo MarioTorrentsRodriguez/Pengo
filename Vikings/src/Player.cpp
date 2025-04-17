@@ -5,134 +5,151 @@
 #include <raymath.h>
 
 Player::Player(const Point& p, State s, Look view) :
-	Entity(p, PLAYER_PHYSICAL_WIDTH, PLAYER_PHYSICAL_HEIGHT, PLAYER_FRAME_SIZE, PLAYER_FRAME_SIZE)
+    Entity(p, PLAYER_PHYSICAL_WIDTH, PLAYER_PHYSICAL_HEIGHT, PLAYER_FRAME_SIZE, PLAYER_FRAME_SIZE)
 {
-	state = s;
-	look = view;
-	dir = { 0, 0 };
-	jump_delay = PLAYER_JUMP_DELAY;
-	map = nullptr;
-	score = 0;
+    state = s;
+    look = view;
+    dir = { 0, 0 };
+    jump_delay = PLAYER_JUMP_DELAY;
+    map = nullptr;
+    score = 0;
 }
 
 Player::~Player() {}
 
 AppStatus Player::Initialise()
 {
-	int i;
-	const int n = PLAYER_FRAME_SIZE;
+    ResourceManager& data = ResourceManager::Instance();
 
-	ResourceManager& data = ResourceManager::Instance();
-	if (data.LoadTexture(Resource::IMG_PLAYER, "images/eric.png") != AppStatus::OK)
-		return AppStatus::ERROR;
+    if (data.LoadTexture(Resource::IMG_PLAYER, "images/eric.png") != AppStatus::OK)
+        return AppStatus::ERROR;
 
-	render = new Sprite(data.GetTexture(Resource::IMG_PLAYER));
-	if (render == nullptr) return AppStatus::ERROR;
+    render = new Sprite(data.GetTexture(Resource::IMG_PLAYER));
+    if (render == nullptr)
+        return AppStatus::ERROR;
 
-	Sprite* sprite = dynamic_cast<Sprite*>(render);
-	sprite->SetNumberAnimations((int)PlayerAnim::NUM_ANIMATIONS);
+    Sprite* sprite = dynamic_cast<Sprite*>(render);
+    sprite->SetNumberAnimations(static_cast<int>(PlayerAnim::NUM_ANIMATIONS));
 
-	sprite->SetAnimationDelay((int)PlayerAnim::IDLE_RIGHT, ANIM_DELAY);
-	sprite->AddKeyFrame((int)PlayerAnim::IDLE_RIGHT, { 0, 0, n, n });
-	sprite->SetAnimationDelay((int)PlayerAnim::IDLE_LEFT, ANIM_DELAY);
-	sprite->AddKeyFrame((int)PlayerAnim::IDLE_LEFT, { 0, 0, -n, n });
+    const int n = 16;
 
-	sprite->SetAnimationDelay((int)PlayerAnim::WALKING_RIGHT, ANIM_DELAY);
-	for (i = 0; i < 8; ++i)
-		sprite->AddKeyFrame((int)PlayerAnim::WALKING_RIGHT, { (float)i * n, 4 * n, n, n });
-	sprite->SetAnimationDelay((int)PlayerAnim::WALKING_LEFT, ANIM_DELAY);
-	for (i = 0; i < 8; ++i)
-		sprite->AddKeyFrame((int)PlayerAnim::WALKING_LEFT, { (float)i * n, 4 * n, -n, n });
+    // Animaciones
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_DOWN, ANIM_DELAY);
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_DOWN, { 0 * n, 0, n, n });
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_DOWN, { 1 * n, 0, n, n });
 
-	sprite->SetAnimationDelay((int)PlayerAnim::CLIMBING, ANIM_LADDER_DELAY);
-	for (i = 0; i < 4; ++i)
-		sprite->AddKeyFrame((int)PlayerAnim::CLIMBING, { (float)i * n, 6 * n, n, n });
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_LEFT, ANIM_DELAY);
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_LEFT, { 2 * n, 0, n, n });
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_LEFT, { 3 * n, 0, n, n });
 
-	sprite->SetAnimation((int)PlayerAnim::IDLE_RIGHT);
-	return AppStatus::OK;
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_UP, ANIM_DELAY);
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_UP, { 4 * n, 0, n, n });
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_UP, { 5 * n, 0, n, n });
+
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_RIGHT, ANIM_DELAY);
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_RIGHT, { 6 * n, 0, n, n });
+    sprite->AddKeyFrame((int)PlayerAnim::WALKING_RIGHT, { 7 * n, 0, n, n });
+
+    sprite->SetAnimation((int)PlayerAnim::WALKING_DOWN);
+    sprite->SetAutomaticMode();
+
+    return AppStatus::OK;
 }
 
 void Player::Update()
 {
-	HandleMovement();
-	Sprite* sprite = dynamic_cast<Sprite*>(render);
-	sprite->Update();
+    HandleMovement();
+
+    Sprite* sprite = dynamic_cast<Sprite*>(render);
+    if (sprite != nullptr)
+        sprite->Update();
 }
 
 void Player::HandleMovement()
 {
-	Point old_pos = pos;
-	dir = { 0, 0 };
+    Point old_pos = pos;
+    dir = { 0, 0 };
 
-	if (IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) {
-		dir.x = -PLAYER_SPEED;
-		look = Look::LEFT;
-		SetAnimation((int)PlayerAnim::WALKING_LEFT);
-	}
-	else if (IsKeyDown(KEY_RIGHT)) {
-		dir.x = PLAYER_SPEED;
-		look = Look::RIGHT;
-		SetAnimation((int)PlayerAnim::WALKING_RIGHT);
-	}
-	else if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
-		dir.y = -PLAYER_SPEED;
-		SetAnimation((int)PlayerAnim::CLIMBING);
-		Sprite* sprite = dynamic_cast<Sprite*>(render);
-		if (sprite) {
-			sprite->SetManualMode();
-			sprite->NextFrame();
-		}
-	}
-	else if (IsKeyDown(KEY_DOWN)) {
-		dir.y = PLAYER_SPEED;
-		SetAnimation((int)PlayerAnim::CLIMBING);
-		Sprite* sprite = dynamic_cast<Sprite*>(render);
-		if (sprite) {
-			sprite->SetManualMode();
-			sprite->PrevFrame();
-		}
-	}
-	else {
-		SetIdleAnimation();
-	}
+    Sprite* sprite = dynamic_cast<Sprite*>(render);
 
-	Point next_pos = pos + dir;
-	AABB new_box = GetHitbox();
-	new_box.pos += dir;
+    if (IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) {
+        dir.x = -PLAYER_SPEED;
+        look = Look::LEFT;
+        if (GetAnimation() != PlayerAnim::WALKING_LEFT)
+            SetAnimation((int)PlayerAnim::WALKING_LEFT);
+    }
+    else if (IsKeyDown(KEY_RIGHT)) {
+        dir.x = PLAYER_SPEED;
+        look = Look::RIGHT;
+        if (GetAnimation() != PlayerAnim::WALKING_RIGHT)
+            SetAnimation((int)PlayerAnim::WALKING_RIGHT);
+    }
+    else if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
+        dir.y = -PLAYER_SPEED;
+        if (GetAnimation() != PlayerAnim::WALKING_UP)
+            SetAnimation((int)PlayerAnim::WALKING_UP);
+    }
+    else if (IsKeyDown(KEY_DOWN)) {
+        dir.y = PLAYER_SPEED;
+        if (GetAnimation() != PlayerAnim::WALKING_DOWN)
+            SetAnimation((int)PlayerAnim::WALKING_DOWN);
+    }
+    else {
+        SetIdleAnimation();
+    }
 
-	if (dir.x < 0 && map->TestCollisionWallLeft(new_box)) pos = old_pos;
-	else if (dir.x > 0 && map->TestCollisionWallRight(new_box)) pos = old_pos;
-	else if ((dir.y < 0 && map->TestCollisionWallLeft(new_box)) ||
-		(dir.y > 0 && map->TestCollisionGround(new_box, &next_pos.y))) pos = old_pos;
-	else pos = next_pos;
+    Point next_pos = pos + dir;
+    AABB new_box = GetHitbox();
+    new_box.pos += dir;
+
+    if (dir.x < 0 && map->TestCollisionWallLeft(new_box)) pos = old_pos;
+    else if (dir.x > 0 && map->TestCollisionWallRight(new_box)) pos = old_pos;
+    else if (dir.y != 0 && map->TestCollisionGround(new_box, &next_pos.y)) pos = old_pos;
+    else pos = next_pos;
 }
 
 void Player::SetIdleAnimation()
 {
-	if (look == Look::LEFT) SetAnimation((int)PlayerAnim::IDLE_LEFT);
-	else SetAnimation((int)PlayerAnim::IDLE_RIGHT);
+    SetAnimation((int)PlayerAnim::WALKING_DOWN);
 }
 
 void Player::SetAnimation(int id)
 {
-	Sprite* sprite = dynamic_cast<Sprite*>(render);
-	if (sprite != nullptr) sprite->SetAnimation(id);
+    Sprite* sprite = dynamic_cast<Sprite*>(render);
+    if (sprite != nullptr) {
+        sprite->SetAnimation(id);
+        sprite->SetAutomaticMode();
+    }
 }
 
 PlayerAnim Player::GetAnimation()
 {
-	Sprite* sprite = dynamic_cast<Sprite*>(render);
-	return (PlayerAnim)sprite->GetAnimation();
+    Sprite* sprite = dynamic_cast<Sprite*>(render);
+    if (sprite != nullptr)
+        return static_cast<PlayerAnim>(sprite->GetAnimation());
+    return PlayerAnim::WALKING_DOWN;
 }
 
 void Player::InitScore() { score = 0; }
 void Player::IncrScore(int n) { score += n; }
 int Player::GetScore() { return score; }
-void Player::SetTileMap(TileMap* tilemap) { map = tilemap; }
-void Player::DrawDebug(const Color& col) const { Entity::DrawHitbox(pos.x, pos.y, width, height, col); }
+
+void Player::SetTileMap(TileMap* tilemap)
+{
+    map = tilemap;
+}
+
+void Player::DrawDebug(const Color& col) const
+{
+    Entity::DrawHitbox(pos.x, pos.y, width, height, col);
+}
+
 void Player::Release()
 {
-	ResourceManager& data = ResourceManager::Instance();
-	data.ReleaseTexture(Resource::IMG_PLAYER);
-	render->Release();
+    ResourceManager& data = ResourceManager::Instance();
+    data.ReleaseTexture(Resource::IMG_PLAYER);
+
+    if (render != nullptr) {
+        render->Release();
+    }
 }
