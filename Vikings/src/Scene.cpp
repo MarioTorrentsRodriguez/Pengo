@@ -159,6 +159,7 @@ void Scene::Render()
 		player->Draw();
 	if (debug == DebugMode::SPRITES_AND_HITBOXES || debug == DebugMode::ONLY_HITBOXES)
 		player->DrawDebug(GREEN);
+		level->DrawDebug(GREEN);  // Color para los bloques
 	EndMode2D();
 	RenderGUI();
 }

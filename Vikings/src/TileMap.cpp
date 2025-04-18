@@ -399,3 +399,17 @@ void TileMap::Release()
 		map = nullptr;
 	}
 }
+void TileMap::DrawDebug(const Color& color) const
+{
+	for (int y = 0; y < height; ++y)
+	{
+		for (int x = 0; x < width; ++x)
+		{
+			Tile tile = map[y * width + x];
+			if (IsTileSolid(tile))
+			{
+				DrawRectangleLines(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
+			}
+		}
+	}
+}

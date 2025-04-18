@@ -46,13 +46,13 @@ enum class Tile {
 class TileMap
 {
 public:
+	void DrawDebug(const Color& color) const;
 	TileMap();
 	~TileMap();
 
 	AppStatus Initialise();
 	AppStatus Load(int data[], int w, int h);
 	void ClearObjectEntityPositions();
-
 	void Update();
 	void Render();
 	void Release();
