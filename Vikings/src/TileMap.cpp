@@ -413,3 +413,21 @@ void TileMap::DrawDebug(const Color& color) const
 		}
 	}
 }
+bool TileMap::TestCollisionAllSides(const AABB& box) const
+{
+	// Recorre todos los píxeles cubiertos por la hitbox del jugador
+	int x0 = box.pos.x / TILE_SIZE;
+	int y0 = box.pos.y / TILE_SIZE;
+	int x1 = (box.pos.x + box.width - 1) / TILE_SIZE;
+	int y1 = (box.pos.y + box.height - 1) / TILE_SIZE;
+
+	for (int y = y0; y <= y1; ++y)
+	{
+		for (int x = x0; x <= x1; ++x)
+		{
+			if (IsTileSolid(GetTileIndex(x, y)))
+				return true;
+		}
+	}
+	return false;
+}

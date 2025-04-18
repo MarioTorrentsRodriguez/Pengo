@@ -49,7 +49,7 @@ public:
 	void DrawDebug(const Color& color) const;
 	TileMap();
 	~TileMap();
-
+	bool TestCollisionAllSides(const AABB& box) const;
 	AppStatus Initialise();
 	AppStatus Load(int data[], int w, int h);
 	void ClearObjectEntityPositions();

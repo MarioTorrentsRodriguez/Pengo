@@ -102,10 +102,14 @@ void Player::HandleMovement()
     AABB new_box = GetHitbox();
     new_box.pos += dir;
 
-    if (dir.x < 0 && map->TestCollisionWallLeft(new_box)) pos = old_pos;
-    else if (dir.x > 0 && map->TestCollisionWallRight(new_box)) pos = old_pos;
-    else if (dir.y != 0 && map->TestCollisionGround(new_box, &next_pos.y)) pos = old_pos;
-    else pos = next_pos;
+    if (map->TestCollisionAllSides(new_box))
+    {
+        pos = old_pos; // cancelamos el movimiento si choca con cualquier lado
+    }
+    else
+    {
+        pos = next_pos;
+    }
 }
 
 void Player::SetIdleAnimation()
