@@ -13,7 +13,7 @@
 #define TURRET_PHYSICAL_WIDTH	32
 #define TURRET_PHYSICAL_HEIGHT	26
 
-enum class EnemyType { SLIME, TURRET };
+enum class EnemyType { SLIME, TURRET, GLORP };
 
 class Enemy :  public Entity
 {

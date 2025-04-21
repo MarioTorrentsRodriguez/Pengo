@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\AABB.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
+    <ClCompile Include="src\EnemyGlorp.cpp" />
     <ClCompile Include="src\EnemyManager.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="dependencies\raylib\include\raymath.h" />
     <ClInclude Include="src\AABB.h" />
     <ClInclude Include="src\Enemy.h" />
+    <ClInclude Include="src\EnemyGlorp.h" />
     <ClInclude Include="src\EnemyManager.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Game.h" />

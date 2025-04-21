@@ -1,42 +1,29 @@
 #pragma once
-#include "Enemy.h"
+#include <vector>
+#include "Enemy.h"           // <-- importante para EnemyType y clase base
 #include "ShotManager.h"
+#include "TileMap.h"
 
 class EnemyManager
 {
 public:
-	EnemyManager();
-	~EnemyManager();
+    EnemyManager();
+    ~EnemyManager();
 
-	AppStatus Initialise();
+    void SetTileMap(TileMap* tilemap);
+    void SetShotManager(ShotManager* shots);
 
-	//Set the ShotManager reference for managing enemy shots
-	void SetShotManager(ShotManager* shots);
+    void Add(const Point& pos, EnemyType type, const AABB& area, Look look = Look::RIGHT);
 
-	//Add a new enemy with the given position, type, action area and looking direction
-	void Add(const Point& pos, EnemyType type, const AABB& area, Look look = Look::RIGHT);
+    void Update(const AABB& player_hitbox);
+    void Draw() const;
+    void DrawDebug() const;
 
-	//Retrieve the hitbox of an enemy based on the given position and type
-	AABB GetEnemyHitBox(const Point& pos, EnemyType type) const;
-	
-	//Update enemies according to their logic. If the given player hitbox is visible to them,
-	//they will shoot by adding shots to the ShotManager
-	void Update(const AABB& player_hitbox);
-
-	//Draw all enemies
-	void Draw() const;
-
-	//Draw enemy hitboxes for debugging
-	void DrawDebug() const;
-	
-	//Delete all enemies and clear the enemy vector
-	void Release();
+    void Release();
 
 private:
-	std::vector<Enemy*> enemies;
-	
-	//Reference to the ShotManager object
-	//This class does not own the object, it only holds a reference to it
-	ShotManager *shots;
-};
+    std::vector<Enemy*> enemies;
 
+    TileMap* tilemap;
+    ShotManager* shots;
+};
