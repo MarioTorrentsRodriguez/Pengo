@@ -91,25 +91,29 @@ void Player::HandleMovement()
     Sprite* sprite = dynamic_cast<Sprite*>(render);
 
     if (IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) {
-        dir.x = -PLAYER_SPEED;
-        look = Look::LEFT;
-        SetAnimation((int)PlayerAnim::WALKING_LEFT);
-    }
-    else if (IsKeyDown(KEY_RIGHT)) {
-        dir.x = PLAYER_SPEED;
-        look = Look::RIGHT;
-        SetAnimation((int)PlayerAnim::WALKING_RIGHT);
-    }
-    else if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
-        dir.y = -PLAYER_SPEED;
-        look = Look::UP;  // ⬆️ ASEGURATE DE INCLUIR ESTO
-        SetAnimation((int)PlayerAnim::WALKING_UP);
-    }
-    else if (IsKeyDown(KEY_DOWN)) {
-        dir.y = PLAYER_SPEED;
-        look = Look::DOWN;  // ⬇️ ASEGURATE DE INCLUIR ESTO
-        SetAnimation((int)PlayerAnim::WALKING_DOWN);
-    }
+    dir.x = -PLAYER_SPEED;
+    look = Look::LEFT;
+    if (GetAnimation() != PlayerAnim::WALKING_LEFT)
+    SetAnimation((int)PlayerAnim::WALKING_LEFT);
+}
+else if (IsKeyDown(KEY_RIGHT)) {
+    dir.x = PLAYER_SPEED;
+    look = Look::RIGHT;
+    if (GetAnimation() != PlayerAnim::WALKING_RIGHT)
+    SetAnimation((int)PlayerAnim::WALKING_RIGHT);
+}
+else if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
+    dir.y = -PLAYER_SPEED;
+    look = Look::UP;  // ⬆️ ASEGURATE DE INCLUIR ESTO
+    if (GetAnimation() != PlayerAnim::WALKING_UP)
+    SetAnimation((int)PlayerAnim::WALKING_UP);
+}
+else if (IsKeyDown(KEY_DOWN)) {
+    dir.y = PLAYER_SPEED;
+    look = Look::DOWN;  // ⬇️ ASEGURATE DE INCLUIR ESTO
+    if (GetAnimation() != PlayerAnim::WALKING_DOWN)
+    SetAnimation((int)PlayerAnim::WALKING_DOWN);
+}
     else {
         SetIdleAnimation();
     }
