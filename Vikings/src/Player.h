@@ -50,6 +50,7 @@ private:
     void SetIdleAnimation();
     void SetAnimation(int id);
     PlayerAnim GetAnimation();
+    float invincible_timer = 0.0f; // en segundos
     int lives = 3;
     bool IsLookingRight() const;
     bool IsLookingLeft() const;
@@ -58,7 +59,8 @@ private:
     bool IsDescending() const;
     bool IsInFirstHalfTile() const;
     bool IsInSecondHalfTile() const;
-
+    bool IsInvincible() const;
+    void UpdateInvincibility(float delta_time);
     void MoveX();
     void MoveY();
     void LogicJumping();

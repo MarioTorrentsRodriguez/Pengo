@@ -55,7 +55,20 @@ AppStatus Player::Initialise()
 
     return AppStatus::OK;
 }
+void Player::UpdateInvincibility(float delta_time)
+{
+    if (invincible_timer > 0.0f)
+    {
+        invincible_timer -= delta_time;
+        if (invincible_timer < 0.0f)
+            invincible_timer = 0.0f;
+    }
+}
 
+bool Player::IsInvincible() const
+{
+    return invincible_timer > 0.0f;
+}
 void Player::Update()
 {
     HandleMovement();
@@ -63,6 +76,7 @@ void Player::Update()
     Sprite* sprite = dynamic_cast<Sprite*>(render);
     if (sprite != nullptr)
         sprite->Update();
+    UpdateInvincibility(GetFrameTime());
 }
 
 void Player::HandleMovement()
@@ -135,9 +149,12 @@ PlayerAnim Player::GetAnimation()
 }
 void Player::TakeHit()
 {
-    if (lives > 0) lives--;
+    if (!IsInvincible())
+    {
+        if (lives > 0) lives--;
+        invincible_timer = 0.5f; // medio segundo de invencibilidad
+    }
 }
-
 int Player::GetLives() const
 {
     return lives;
