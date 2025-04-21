@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "Sprite.h"
+#include "Globals.h"
 
 Enemy::Enemy(const Point& p, int width, int height, int frame_width, int frame_height) : 
 	Entity(p, width, height, frame_width, frame_height)

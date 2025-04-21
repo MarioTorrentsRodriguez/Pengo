@@ -437,3 +437,18 @@ bool TileMap::TestCollisionAllSides(const AABB& box) const
 	}
 	return false;
 }
+bool TileMap::IsValidCell(int x, int y) const
+{
+	return x >= 0 && y >= 0 && x < width&& y < height;
+}
+
+bool TileMap::IsWall(int x, int y) const
+{
+	Tile tile = map[y * width + x];
+	return tile >= Tile::SOLID_FIRST && tile <= Tile::SOLID_LAST;
+}
+
+void TileMap::SetTile(int x, int y, Tile tile)
+{
+	map[y * width + x] = tile;
+}

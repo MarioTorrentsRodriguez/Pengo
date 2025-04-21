@@ -1,4 +1,4 @@
-#include "Player.h"
+﻿#include "Player.h"
 #include "Sprite.h"
 #include "TileMap.h"
 #include "Globals.h"
@@ -77,6 +77,10 @@ void Player::Update()
     if (sprite != nullptr)
         sprite->Update();
     UpdateInvincibility(GetFrameTime());
+    if (IsKeyPressed(KEY_E))
+    {
+        TryDestroyTile();
+    }
 }
 
 void Player::HandleMovement()
@@ -185,5 +189,33 @@ void Player::Release()
 
     if (render != nullptr) {
         render->Release();
+    }
+}
+void Player::TryDestroyTile()
+{
+    if (!map) return;
+
+    // Calcular el tile frente al jugador según dirección
+    Point front = pos;
+
+    switch (look)
+    {
+    case Look::LEFT:  front.x -= TILE_SIZE; break;
+    case Look::RIGHT: front.x += TILE_SIZE; break;
+    case Look::UP:    front.y -= TILE_SIZE; break;
+    case Look::DOWN:  front.y += TILE_SIZE; break;
+    }
+
+    // Convertir posición a coordenadas de celda
+    int tile_x = front.x / TILE_SIZE;
+    int tile_y = front.y / TILE_SIZE;
+
+    // Verificar que está dentro del mapa
+    if (map->IsValidCell(tile_x, tile_y))
+    {
+        if (map->IsWall(tile_x, tile_y))
+        {
+            map->SetTile(tile_x, tile_y, Tile::AIR); // ✅ AIR es un tile vacío visible
+        }
     }
 }

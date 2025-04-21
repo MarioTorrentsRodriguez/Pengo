@@ -65,7 +65,7 @@ private:
     void MoveY();
     void LogicJumping();
     void LogicClimbing();
-
+    void TryDestroyTile();
     void Stop();
     void StartWalkingLeft();
     void StartWalkingRight();
