@@ -93,24 +93,22 @@ void Player::HandleMovement()
     if (IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) {
         dir.x = -PLAYER_SPEED;
         look = Look::LEFT;
-        if (GetAnimation() != PlayerAnim::WALKING_LEFT)
-            SetAnimation((int)PlayerAnim::WALKING_LEFT);
+        SetAnimation((int)PlayerAnim::WALKING_LEFT);
     }
     else if (IsKeyDown(KEY_RIGHT)) {
         dir.x = PLAYER_SPEED;
         look = Look::RIGHT;
-        if (GetAnimation() != PlayerAnim::WALKING_RIGHT)
-            SetAnimation((int)PlayerAnim::WALKING_RIGHT);
+        SetAnimation((int)PlayerAnim::WALKING_RIGHT);
     }
     else if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
         dir.y = -PLAYER_SPEED;
-        if (GetAnimation() != PlayerAnim::WALKING_UP)
-            SetAnimation((int)PlayerAnim::WALKING_UP);
+        look = Look::UP;  // ⬆️ ASEGURATE DE INCLUIR ESTO
+        SetAnimation((int)PlayerAnim::WALKING_UP);
     }
     else if (IsKeyDown(KEY_DOWN)) {
         dir.y = PLAYER_SPEED;
-        if (GetAnimation() != PlayerAnim::WALKING_DOWN)
-            SetAnimation((int)PlayerAnim::WALKING_DOWN);
+        look = Look::DOWN;  // ⬇️ ASEGURATE DE INCLUIR ESTO
+        SetAnimation((int)PlayerAnim::WALKING_DOWN);
     }
     else {
         SetIdleAnimation();
@@ -195,27 +193,33 @@ void Player::TryDestroyTile()
 {
     if (!map) return;
 
-    // Calcular el tile frente al jugador según dirección
-    Point front = pos;
+    // Obtener centro de la hitbox real del jugador
+    AABB hitbox = GetHitbox();
+    Point front = {
+        hitbox.pos.x + hitbox.width / 2,
+        hitbox.pos.y + hitbox.height / 2
+    };
+
+    // Alcance para detectar bloque frente a la mirada
+    const int reach = TILE_SIZE * 0.75f;
 
     switch (look)
     {
-    case Look::LEFT:  front.x -= TILE_SIZE; break;
-    case Look::RIGHT: front.x += TILE_SIZE; break;
-    case Look::UP:    front.y -= TILE_SIZE; break;
-    case Look::DOWN:  front.y += TILE_SIZE; break;
+    case Look::LEFT:  front.x -= reach; break;
+    case Look::RIGHT: front.x += reach; break;
+    case Look::UP:    front.y -= reach; break;
+    case Look::DOWN:  front.y += reach; break;
     }
 
-    // Convertir posición a coordenadas de celda
     int tile_x = front.x / TILE_SIZE;
     int tile_y = front.y / TILE_SIZE;
 
-    // Verificar que está dentro del mapa
     if (map->IsValidCell(tile_x, tile_y))
     {
         if (map->IsWall(tile_x, tile_y))
         {
-            map->SetTile(tile_x, tile_y, Tile::AIR); // ✅ AIR es un tile vacío visible
+            map->SetTile(tile_x, tile_y, Tile::AIR);
         }
     }
 }
+

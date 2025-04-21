@@ -115,7 +115,7 @@ AppStatus Game::Update()
     switch (state)
     {
     case GameState::INITIAL_SCREEN:
-        if (IsKeyPressed(KEY_ENTER)) {
+        if (IsKeyPressed(KEY_SPACE)) {
             state = GameState::MAIN_MENU;
         }
         break;
