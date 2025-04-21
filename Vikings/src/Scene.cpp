@@ -47,6 +47,8 @@ AppStatus Scene::Init()
 	// ⬇ Cargar el nivel después
 	if (LoadLevel(1) != AppStatus::OK) return AppStatus::ERROR;
 	player->SetTileMap(level);
+	Sound level1Song = LoadSound("audio/level1Song.mp3");
+	Sound level2Song = LoadSound("audio/level2Song.mp3");
 	return AppStatus::OK;
 }
 
@@ -132,9 +134,15 @@ void Scene::Update()
 		debug = (DebugMode)(((int)debug + 1) % (int)DebugMode::SIZE);
 	if (IsKeyPressed(KEY_ONE)) {
 		LoadLevel(1);
-
+		StopSound(level2Song);
+		PlaySound(level1Song);
 	}
-	else if (IsKeyPressed(KEY_TWO)) LoadLevel(2);
+	else if (IsKeyPressed(KEY_TWO)) {
+		LoadLevel(2);
+		StopSound(level1Song);
+		PlaySound(level2Song);
+	}
+		
 
 	level->Update();
 	player->Update();

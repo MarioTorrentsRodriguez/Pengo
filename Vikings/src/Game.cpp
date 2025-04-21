@@ -88,7 +88,6 @@ AppStatus Game::LoadResources()
     Sound level1Song = LoadSound("audio/level1Song.mp3");
     Sound level2Song = LoadSound("audio/level2Song.mp3");
     PlaySound(menuSong);
-
     return AppStatus::OK;
 }
 AppStatus Game::BeginPlay()
@@ -129,6 +128,7 @@ AppStatus Game::Update()
         if (IsKeyPressed(KEY_ESCAPE)) return AppStatus::QUIT;
         if (IsKeyPressed(KEY_SPACE))
         {
+            StopSound(menuSong);
             if (BeginPlay() != AppStatus::OK) return AppStatus::ERROR;
             state = GameState::PLAYING;
         }
@@ -139,6 +139,7 @@ AppStatus Game::Update()
         {
             FinishPlay();
             state = GameState::MAIN_MENU;
+            PlaySound(menuSong);
         }
         else
         {
