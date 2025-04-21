@@ -64,10 +64,10 @@ void TileMap::InitTileDictionary()
 	dict_rect[(int)Tile::LOCK_RED] = { 6 * n, 2 * n, n, n };
 	dict_rect[(int)Tile::LOCK_YELLOW] = { 7 * n, 2 * n, n, n };
 
-	dict_rect[(int)Tile::LASER_L] = { 0, 6 * n, n, n };
-	dict_rect[(int)Tile::LASER_R] = { 4 * n, 6 * n, n, n };
+	dict_rect[(int)Tile::LASER_L] = { 0, 0, n, n };
+	dict_rect[(int)Tile::LASER_R] = { 0, 0, n, n };
 	
-	dict_rect[(int)Tile::LASER_FRAME0] = { 1 * n, 6 * n, n, n };
+	dict_rect[(int)Tile::LASER_FRAME0] = { 0, 0, n, n };
 	dict_rect[(int)Tile::LASER_FRAME1] = { 2 * n, 6 * n, n, n };
 	dict_rect[(int)Tile::LASER_FRAME2] = { 3 * n, 6 * n, n, n };
 
@@ -81,6 +81,11 @@ AppStatus TileMap::Initialise()
 		return AppStatus::ERROR;
 	}
 	img_tiles = data.GetTexture(Resource::IMG_TILES);
+	if (data.LoadTexture(Resource::IMG_ENEMIES, "images/SBV.png") != AppStatus::OK)
+	{
+		return AppStatus::ERROR;
+	}
+	img_enemies = data.GetTexture(Resource::IMG_ENEMIES);
 
 	laser = new Sprite(img_tiles);
 	if (laser == nullptr)
@@ -373,7 +378,8 @@ void TileMap::Render()
 				}
 				else
 				{
-					laser->Draw((int)pos.x, (int)pos.y);
+					rc = dict_rect[(int)tile];
+					DrawTextureRec(*img_enemies, rc, pos, WHITE);
 				}
 			}
 		}

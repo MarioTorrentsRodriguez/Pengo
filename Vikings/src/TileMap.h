@@ -23,6 +23,7 @@ enum class Tile {
 	LADDER_L = 20, LADDER_R, LADDER_TOP_L, LADDER_TOP_R,
 	LOCK_RED = 30, LOCK_YELLOW, 
 	LASER_L = 40, LASER_R,
+	BLOCK_MOVING_LEFT = 45,
 
 	// 50 <= id < 100: special tiles
 	DOOR = 50,
@@ -106,5 +107,9 @@ private:
 	
 	//Tile sheet
 	const Texture2D *img_tiles;
+
+	const Texture2D *img_enemies;
+
+	
 };
 
