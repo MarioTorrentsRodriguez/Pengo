@@ -21,7 +21,7 @@ void log(const char file[], int line, const char* text, ...);
 //Game constants
 #define MARGIN_GUI_Y	28
 #define TILE_SIZE		16
-#define LEVEL_WIDTH	15
+#define LEVEL_WIDTH	17
 #define LEVEL_HEIGHT	20
 
 //Entities animation delay

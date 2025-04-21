@@ -57,7 +57,9 @@ public:
 	void Update();
 	void Render();
 	void Release();
-
+	bool IsWall(int x, int y) const;
+	bool IsValidCell(int x, int y) const; 
+	void SetTile(int x, int y, Tile tile);
 	bool IsTileObject(Tile tile) const;
 	bool IsTileEntity(Tile tile) const;
 
