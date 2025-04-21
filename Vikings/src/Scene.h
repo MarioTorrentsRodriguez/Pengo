@@ -43,7 +43,7 @@ private:
 
     //Shots thrown by enemies
     ShotManager *shots;
-    
+    Sound menuSong = LoadSound("audio/mainMenu.mp3");
     Camera2D camera;
     DebugMode debug;
 };

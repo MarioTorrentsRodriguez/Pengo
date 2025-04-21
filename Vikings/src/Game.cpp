@@ -57,6 +57,7 @@ AppStatus Game::Initialise(float scale)
     SetTargetFPS(60);
     //Disable the escape key to quit functionality
     SetExitKey(0);
+    InitAudioDevice();
 
     return AppStatus::OK;
 }
@@ -83,6 +84,10 @@ AppStatus Game::LoadResources()
     if (data.LoadTexture(Resource::IMG_LOSE, "images/losescreen.png") != AppStatus::OK)
         return AppStatus::ERROR;
     img_lose = data.GetTexture(Resource::IMG_LOSE);
+    Sound menuSong = LoadSound("audio/mainMenu.mp3");
+    Sound level1Song = LoadSound("audio/level1Song.mp3");
+    Sound level2Song = LoadSound("audio/level2Song.mp3");
+    PlaySound(menuSong);
 
     return AppStatus::OK;
 }
@@ -99,7 +104,6 @@ AppStatus Game::BeginPlay()
         LOG("Failed to initialise Scene");
         return AppStatus::ERROR;
     }
-
     return AppStatus::OK;
 }
 void Game::FinishPlay()
@@ -110,6 +114,7 @@ void Game::FinishPlay()
 }
 AppStatus Game::Update()
 {
+
     if (WindowShouldClose()) return AppStatus::QUIT;
 
     switch (state)
@@ -201,6 +206,10 @@ void Game::Render()
 void Game::Cleanup()
 {
     UnloadResources();
+    UnloadSound(menuSong);
+    UnloadSound(level1Song);
+    UnloadSound(level2Song);
+    CloseAudioDevice();
     CloseWindow();
 }
 void Game::UnloadResources()

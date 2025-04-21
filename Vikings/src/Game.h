@@ -37,6 +37,10 @@ private:
     const Texture2D* img_initial;
     const Texture2D* img_win;
     const Texture2D* img_lose;
+    Sound menuSong = LoadSound("audio/mainMenu.mp3");
+    Sound level1Song = LoadSound("audio/level1Song.mp3");
+    Sound level2Song = LoadSound("audio/level2Song.mp3");
+
 
 
 
