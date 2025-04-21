@@ -1,7 +1,9 @@
 ﻿#include "Game.h"
 #include "MemLeaks.h"
 #include "Globals.h"
-
+#define RAYGUI_IMPLEMENTATION
+#define RAYLIB_STATIC
+#include "raylib.h"
 Game* g_game = nullptr;  // ✅ DEFINICIÓN global que otros archivos usan
 
 int main()
