@@ -91,29 +91,29 @@ void Player::HandleMovement()
     Sprite* sprite = dynamic_cast<Sprite*>(render);
 
     if (IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) {
-    dir.x = -PLAYER_SPEED;
-    look = Look::LEFT;
-    if (GetAnimation() != PlayerAnim::WALKING_LEFT)
-    SetAnimation((int)PlayerAnim::WALKING_LEFT);
-}
-else if (IsKeyDown(KEY_RIGHT)) {
-    dir.x = PLAYER_SPEED;
-    look = Look::RIGHT;
-    if (GetAnimation() != PlayerAnim::WALKING_RIGHT)
-    SetAnimation((int)PlayerAnim::WALKING_RIGHT);
-}
-else if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
-    dir.y = -PLAYER_SPEED;
-    look = Look::UP;  // ⬆️ ASEGURATE DE INCLUIR ESTO
-    if (GetAnimation() != PlayerAnim::WALKING_UP)
-    SetAnimation((int)PlayerAnim::WALKING_UP);
-}
-else if (IsKeyDown(KEY_DOWN)) {
-    dir.y = PLAYER_SPEED;
-    look = Look::DOWN;  // ⬇️ ASEGURATE DE INCLUIR ESTO
-    if (GetAnimation() != PlayerAnim::WALKING_DOWN)
-    SetAnimation((int)PlayerAnim::WALKING_DOWN);
-}
+        dir.x = -PLAYER_SPEED;
+        look = Look::LEFT;
+        if (GetAnimation() != PlayerAnim::WALKING_LEFT)
+            SetAnimation((int)PlayerAnim::WALKING_LEFT);
+    }
+    else if (IsKeyDown(KEY_RIGHT)) {
+        dir.x = PLAYER_SPEED;
+        look = Look::RIGHT;
+        if (GetAnimation() != PlayerAnim::WALKING_RIGHT)
+            SetAnimation((int)PlayerAnim::WALKING_RIGHT);
+    }
+    else if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
+        dir.y = -PLAYER_SPEED;
+        look = Look::UP;
+        if (GetAnimation() != PlayerAnim::WALKING_UP)
+            SetAnimation((int)PlayerAnim::WALKING_UP);
+    }
+    else if (IsKeyDown(KEY_DOWN)) {
+        dir.y = PLAYER_SPEED;
+        look = Look::DOWN;
+        if (GetAnimation() != PlayerAnim::WALKING_DOWN)
+            SetAnimation((int)PlayerAnim::WALKING_DOWN);
+    }
     else {
         SetIdleAnimation();
     }
@@ -122,9 +122,17 @@ else if (IsKeyDown(KEY_DOWN)) {
     AABB new_box = GetHitbox();
     new_box.pos += dir;
 
+    // Limitar físicamente al tamaño de la pantalla
+    if (next_pos.x < 0) next_pos.x = 0;
+    if (next_pos.y < 0) next_pos.y = 0;
+    if (next_pos.x + width > WINDOW_WIDTH)
+        next_pos.x = WINDOW_WIDTH - width;
+    if (next_pos.y + height > WINDOW_HEIGHT)
+        next_pos.y = WINDOW_HEIGHT - height;
+
     if (map->TestCollisionAllSides(new_box))
     {
-        pos = old_pos; // cancelamos el movimiento si choca con cualquier lado
+        pos = old_pos; // Cancela el movimiento si hay colisión
     }
     else
     {
