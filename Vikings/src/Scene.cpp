@@ -138,7 +138,7 @@ void Scene::Update()
 
 	level->Update();
 	player->Update();
-	enemies->Update(player->GetHitbox());
+	enemies->Update(player);
 	shots->Update(player->GetHitbox());
 }
 
@@ -167,10 +167,6 @@ void Scene::Render()
 	RenderGUI();
 }
 
-void Scene::RenderGUI() const
-{
-	DrawText(TextFormat("SCORE : %d", player->GetScore()), 10, 10, 8, LIGHTGRAY);
-}
 
 void Scene::Release()
 {

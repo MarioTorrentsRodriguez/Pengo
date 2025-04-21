@@ -56,7 +56,7 @@ void ShotManager::Update(const AABB& player_hitbox)
 			else if(shot.IsMovingRight()) hit = map->TestCollisionWallRight(box);
 
 			//Check player collision
-			if(!hit) hit = box.TestAABB(player_hitbox);
+			if(!hit) hit = box.Intersects(player_hitbox);
 
 			if(hit) shot.SetAlive(false);
 		}
