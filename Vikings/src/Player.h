@@ -42,13 +42,15 @@ public:
     void Update();
     void DrawDebug(const Color& col) const;
     void Release();
-
+    void TakeHit();
+    int GetLives() const;
+    bool IsAlive() const;
 private:
     void HandleMovement();
     void SetIdleAnimation();
     void SetAnimation(int id);
     PlayerAnim GetAnimation();
-
+    int lives = 3;
     bool IsLookingRight() const;
     bool IsLookingLeft() const;
     bool IsAscending() const;

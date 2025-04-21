@@ -13,7 +13,7 @@ Enemy::~Enemy()
 bool Enemy::IsVisible(const AABB& hitbox)
 {
 	//Does the enemy's visibility area intersect with the hitbox?
-	if (visibility_area.TestAABB(hitbox))
+	if (visibility_area.Intersects(hitbox))
 	{
 		//Is the enemy facing the hitbox?
 		//We consider it not visible when the boxes are colliding
