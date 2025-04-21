@@ -1,12 +1,14 @@
-#include "Game.h"
+﻿#include "Game.h"
 #include "Globals.h"
 #include "ResourceManager.h"
 #include <stdio.h>
 
 Game::Game()
 {
-    state = GameState::INITIAL_SCREEN;
+    state = GameState::CONTROLS_SCREEN;
     scene = nullptr;
+
+    img_controls = nullptr;
     img_menu = nullptr;
     img_initial = nullptr;
     img_win = nullptr;
@@ -64,17 +66,17 @@ AppStatus Game::Initialise(float scale)
 AppStatus Game::LoadResources()
 {
     ResourceManager& data = ResourceManager::Instance();
-    
-    if (data.LoadTexture(Resource::IMG_INITIAL, "images/initialscreen.png") != AppStatus::OK)
-    {
+
+    if (data.LoadTexture(Resource::IMG_CONTROLS, "images/controls.png") != AppStatus::OK)
         return AppStatus::ERROR;
-    }
+    img_controls = data.GetTexture(Resource::IMG_CONTROLS);
+
+    if (data.LoadTexture(Resource::IMG_INITIAL, "images/initialscreen.png") != AppStatus::OK)
+        return AppStatus::ERROR;
     img_initial = data.GetTexture(Resource::IMG_INITIAL);
 
     if (data.LoadTexture(Resource::IMG_MENU, "images/menu.png") != AppStatus::OK)
-    {
         return AppStatus::ERROR;
-    }
     img_menu = data.GetTexture(Resource::IMG_MENU);
 
     if (data.LoadTexture(Resource::IMG_WIN, "images/winscreen.png") != AppStatus::OK)
@@ -84,10 +86,12 @@ AppStatus Game::LoadResources()
     if (data.LoadTexture(Resource::IMG_LOSE, "images/losescreen.png") != AppStatus::OK)
         return AppStatus::ERROR;
     img_lose = data.GetTexture(Resource::IMG_LOSE);
+
     Sound menuSong = LoadSound("audio/mainMenu.mp3");
     Sound level1Song = LoadSound("audio/level1Song.mp3");
     Sound level2Song = LoadSound("audio/level2Song.mp3");
     PlaySound(menuSong);
+
     return AppStatus::OK;
 }
 AppStatus Game::BeginPlay()
@@ -112,11 +116,16 @@ void Game::FinishPlay() {
 }
 AppStatus Game::Update()
 {
-
     if (WindowShouldClose()) return AppStatus::QUIT;
 
     switch (state)
     {
+    case GameState::CONTROLS_SCREEN:
+        if (IsKeyPressed(KEY_SPACE)) {
+            state = GameState::INITIAL_SCREEN;
+        }
+        break;
+
     case GameState::INITIAL_SCREEN:
         if (IsKeyPressed(KEY_SPACE)) {
             state = GameState::MAIN_MENU;
@@ -142,7 +151,7 @@ AppStatus Game::Update()
         }
         else
         {
-            // Simulaci�n de victoria y derrota con W y L
+            // Simulación de victoria y derrota con W y L
             if (IsKeyPressed(KEY_W)) {
                 FinishPlay();
                 state = GameState::WIN_SCREEN;
@@ -162,6 +171,7 @@ AppStatus Game::Update()
             state = GameState::MAIN_MENU;
         }
         break;
+
     case GameState::LOSE_SCREEN:
         if (IsKeyPressed(KEY_SPACE)) {
             state = GameState::MAIN_MENU;
@@ -179,6 +189,10 @@ void Game::Render()
 
     switch (state)
     {
+    case GameState::CONTROLS_SCREEN:
+        DrawTexture(*img_controls, 0, 0, WHITE);
+        break;
+
     case GameState::INITIAL_SCREEN:
         DrawTexture(*img_initial, 0, 0, WHITE);
         break;
@@ -219,6 +233,7 @@ void Game::Cleanup()
 void Game::UnloadResources()
 {
     ResourceManager& data = ResourceManager::Instance();
+    data.ReleaseTexture(Resource::IMG_CONTROLS);
     data.ReleaseTexture(Resource::IMG_INITIAL);
     data.ReleaseTexture(Resource::IMG_MENU);
 
