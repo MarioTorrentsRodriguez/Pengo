@@ -9,6 +9,9 @@ Game::Game()
     scene = nullptr;
     img_menu = nullptr;
     img_initial = nullptr;
+    img_win = nullptr;
+    img_lose = nullptr;
+
 
     target = {};
     src = {};
@@ -72,7 +75,15 @@ AppStatus Game::LoadResources()
         return AppStatus::ERROR;
     }
     img_menu = data.GetTexture(Resource::IMG_MENU);
-    
+
+    if (data.LoadTexture(Resource::IMG_WIN, "images/winscreen.png") != AppStatus::OK)
+        return AppStatus::ERROR;
+    img_win = data.GetTexture(Resource::IMG_WIN);
+
+    if (data.LoadTexture(Resource::IMG_LOSE, "images/losescreen.png") != AppStatus::OK)
+        return AppStatus::ERROR;
+    img_lose = data.GetTexture(Resource::IMG_LOSE);
+
     return AppStatus::OK;
 }
 AppStatus Game::BeginPlay()
@@ -99,13 +110,12 @@ void Game::FinishPlay()
 }
 AppStatus Game::Update()
 {
-    //Check if user attempts to close the window, either by clicking the close button or by pressing Alt+F4
     if (WindowShouldClose()) return AppStatus::QUIT;
 
     switch (state)
     {
     case GameState::INITIAL_SCREEN:
-        if (IsKeyPressed(KEY_SPACE)) {
+        if (IsKeyPressed(KEY_ENTER)) {
             state = GameState::MAIN_MENU;
         }
         break;
@@ -127,11 +137,29 @@ AppStatus Game::Update()
         }
         else
         {
-            //Game logic
-            scene->Update();
+            // Simulación de victoria y derrota con W y L
+            if (IsKeyPressed(KEY_W)) {
+                FinishPlay();
+                state = GameState::WIN_SCREEN;
+            }
+            else if (IsKeyPressed(KEY_L)) {
+                FinishPlay();
+                state = GameState::LOSE_SCREEN;
+            }
+            else {
+                scene->Update();
+            }
+        }
+        break;
+
+    case GameState::WIN_SCREEN:
+    case GameState::LOSE_SCREEN:
+        if (IsKeyPressed(KEY_SPACE)) {
+            state = GameState::MAIN_MENU;
         }
         break;
     }
+
     return AppStatus::OK;
 }
 void Game::Render()
@@ -139,22 +167,30 @@ void Game::Render()
     //Draw everything in the render texture, note this will not be rendered on screen, yet
     BeginTextureMode(target);
     ClearBackground(BLACK);
-    
+
     switch (state)
     {
-        case GameState::INITIAL_SCREEN:
-            DrawTexture(*img_initial, 0, 0, WHITE);
-            break;
+    case GameState::INITIAL_SCREEN:
+        DrawTexture(*img_initial, 0, 0, WHITE);
+        break;
 
-        case GameState::MAIN_MENU:
-            DrawTexture(*img_menu, 0, 0, WHITE);
-            break;
+    case GameState::MAIN_MENU:
+        DrawTexture(*img_menu, 0, 0, WHITE);
+        break;
 
-        case GameState::PLAYING:
-            scene->Render();
-            break;
+    case GameState::PLAYING:
+        scene->Render();
+        break;
+
+    case GameState::WIN_SCREEN:
+        DrawTexture(*img_win, 0, 0, WHITE);
+        break;
+
+    case GameState::LOSE_SCREEN:
+        DrawTexture(*img_lose, 0, 0, WHITE);
+        break;
     }
-    
+
     EndTextureMode();
 
     //Draw render texture to screen, properly scaled
