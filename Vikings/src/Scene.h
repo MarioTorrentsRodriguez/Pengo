@@ -39,6 +39,7 @@ private:
 
     //Enemies present in the level
     EnemyManager *enemies;
+    EnemyManager enemyManager;
 
     //Shots thrown by enemies
     ShotManager *shots;

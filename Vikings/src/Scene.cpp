@@ -1,4 +1,4 @@
-// VersiÛn avanzada de Scene.cpp con plataformas variadas y diseÒo tipo arcade
+Ôªø// Versi—Én avanzada de Scene.cpp con plataformas variadas y dise—Åo tipo arcade
 
 #include "Scene.h"
 #include <stdio.h>
@@ -76,7 +76,7 @@ AppStatus Scene::LoadLevel(int stage)
 	int layouts[2][15][15] = {
 		// Nivel 1
 		{
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{70,70,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 	{1,0,1,0,0,0,1,0,0,0,1,0,1,0,1},
 	{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
