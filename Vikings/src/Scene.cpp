@@ -46,9 +46,7 @@ AppStatus Scene::Init()
 
 	// ⬇ Cargar el nivel después
 	if (LoadLevel(1) != AppStatus::OK) return AppStatus::ERROR;
-
 	player->SetTileMap(level);
-
 	return AppStatus::OK;
 }
 
@@ -132,8 +130,10 @@ void Scene::Update()
 {
 	if (IsKeyPressed(KEY_F1))
 		debug = (DebugMode)(((int)debug + 1) % (int)DebugMode::SIZE);
+	if (IsKeyPressed(KEY_ONE)) {
+		LoadLevel(1);
 
-	if (IsKeyPressed(KEY_ONE)) LoadLevel(1);
+	}
 	else if (IsKeyPressed(KEY_TWO)) LoadLevel(2);
 
 	level->Update();
