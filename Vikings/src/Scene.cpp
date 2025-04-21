@@ -1,6 +1,7 @@
 ﻿#include "Scene.h"
 #include "Globals.h"
-
+#include "Game.h"
+extern Game* g_game;
 Scene::Scene()
 {
 	player = nullptr;
@@ -23,6 +24,7 @@ Scene::~Scene()
 
 AppStatus Scene::Init()
 {
+
 	player = new Player({ 0,0 }, State::IDLE, Look::RIGHT);
 	if (player == nullptr) return AppStatus::ERROR;
 	if (player->Initialise() != AppStatus::OK) return AppStatus::ERROR;
@@ -47,6 +49,7 @@ AppStatus Scene::Init()
 	// ⬇ Cargar el nivel después
 	if (LoadLevel(1) != AppStatus::OK) return AppStatus::ERROR;
 	player->SetTileMap(level);
+	current_stage = 1;
 	return AppStatus::OK;
 }
 
@@ -140,6 +143,30 @@ void Scene::Update()
 	player->Update();
 	enemies->Update(player);
 	shots->Update(player->GetHitbox());
+	// Cambio automático de nivel por score
+	if (player->GetScore() >= 100 && current_stage == 1)
+	{
+		LoadLevel(2);
+		current_stage = 2;
+	}
+
+	// 🟢 Mostrar pantalla de victoria al llegar a 200 (sin importar el stage)
+	if (player->GetScore() >= 200)
+	{
+		g_game->FinishPlay();
+		g_game->ChangeState(GameState::WIN_SCREEN);
+	}
+	if (!player->IsAlive())
+	{
+		g_game->FinishPlay();
+		g_game->ChangeState(GameState::LOSE_SCREEN);
+		return;
+	}
+	else if (player->GetScore() >= 100 && current_stage != 2)
+	{
+		LoadLevel(2);
+		current_stage = 2;
+	}
 }
 
 void Scene::Render()

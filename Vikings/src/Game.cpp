@@ -106,8 +106,7 @@ AppStatus Game::BeginPlay()
     }
     return AppStatus::OK;
 }
-void Game::FinishPlay()
-{
+void Game::FinishPlay() {
     scene->Release();
     delete scene;
     scene = nullptr;
@@ -158,6 +157,10 @@ AppStatus Game::Update()
         break;
 
     case GameState::WIN_SCREEN:
+        if (IsKeyPressed(KEY_SPACE)) {
+            state = GameState::MAIN_MENU;
+        }
+        break;
     case GameState::LOSE_SCREEN:
         if (IsKeyPressed(KEY_SPACE)) {
             state = GameState::MAIN_MENU;

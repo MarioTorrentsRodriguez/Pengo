@@ -23,15 +23,15 @@ public:
     AppStatus Update();
     void Render();
     void Cleanup();
-
+    void ChangeState(GameState new_state) { state = new_state; }
+    void FinishPlay();
+    GameState state;
 private:
     AppStatus BeginPlay();
-    void FinishPlay();
 
     AppStatus LoadResources();
     void UnloadResources();
 
-    GameState state;
     Scene *scene;
     const Texture2D *img_menu;
     const Texture2D* img_initial;

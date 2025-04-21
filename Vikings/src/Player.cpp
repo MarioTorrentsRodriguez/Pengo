@@ -223,6 +223,7 @@ void Player::TryDestroyTile()
         if (map->IsWall(tile_x, tile_y))
         {
             map->SetTile(tile_x, tile_y, Tile::AIR);
+            IncrScore(10); //  suma 10 puntos por destruir bloque
         }
     }
 }
