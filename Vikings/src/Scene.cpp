@@ -201,3 +201,8 @@ void Scene::Release()
 		shots = nullptr;
 	}
 }
+void Scene::RenderGUI() const
+{
+	DrawText(TextFormat("SCORE : %d", player->GetScore()), 10, 10, 8, LIGHTGRAY);
+	DrawText(TextFormat("LIVES : %d", player->GetLives()), 10, 20, 8, LIGHTGRAY);
+}

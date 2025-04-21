@@ -133,7 +133,20 @@ PlayerAnim Player::GetAnimation()
         return static_cast<PlayerAnim>(sprite->GetAnimation());
     return PlayerAnim::WALKING_DOWN;
 }
+void Player::TakeHit()
+{
+    if (lives > 0) lives--;
+}
 
+int Player::GetLives() const
+{
+    return lives;
+}
+
+bool Player::IsAlive() const
+{
+    return lives > 0;
+}
 void Player::InitScore() { score = 0; }
 void Player::IncrScore(int n) { score += n; }
 int Player::GetScore() { return score; }

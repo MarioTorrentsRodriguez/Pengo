@@ -1,6 +1,6 @@
 #include "EnemyManager.h"
 #include "EnemyGlorp.h"
-
+#include "Player.h"
 EnemyManager::EnemyManager()
 {
 	tilemap = nullptr;
@@ -46,6 +46,10 @@ void EnemyManager::Update(const AABB& player_hitbox)
 		if (enemy->IsAlive())
 		{
 			bool shoot = enemy->Update(player_hitbox);
+			if (enemy->GetHitbox().Intersects(player_hitbox))
+			{
+				player->TakeHit();
+			}
 			if (shoot && shots != nullptr)
 			{
 				Point p, d;
