@@ -1,5 +1,8 @@
 ﻿#include "Scene.h"
 #include "Globals.h"
+#include "Game.h" // necesario para acceder a g_game y GameState
+
+extern Game* g_game; // para acceder a la instancia global del juego
 
 Scene::Scene()
 {
@@ -14,6 +17,7 @@ Scene::Scene()
 	camera.zoom = 1.0f;
 
 	debug = DebugMode::OFF;
+	current_stage = 1;
 }
 
 Scene::~Scene()
@@ -39,16 +43,15 @@ AppStatus Scene::Init()
 	enemies->SetTileMap(level);
 	enemies->SetShotManager(shots);
 
-	// 🟢 Glorp se crea antes de cargar el nivel, dentro del laberinto
-	Point glorpPos = { 7 * TILE_SIZE, 5 * TILE_SIZE }; // dentro del laberinto
+	// Glorp se crea antes de cargar el nivel
+	Point glorpPos = { 7 * TILE_SIZE, 5 * TILE_SIZE };
 	AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
 	enemies->Add(glorpPos, EnemyType::GLORP, area);
 
-	// ⬇ Cargar el nivel después
 	if (LoadLevel(1) != AppStatus::OK) return AppStatus::ERROR;
 	player->SetTileMap(level);
-	Sound level1Song = LoadSound("audio/level1Song.mp3");
-	Sound level2Song = LoadSound("audio/level2Song.mp3");
+	current_stage = 1;
+
 	return AppStatus::OK;
 }
 
@@ -98,6 +101,7 @@ AppStatus Scene::LoadLevel(int stage)
 	};
 
 	int middle_x = 7, middle_y = 7;
+
 	if (stage == 1 || stage == 2)
 	{
 		const int(*layout)[15] = layouts[stage - 1];
@@ -132,22 +136,43 @@ void Scene::Update()
 {
 	if (IsKeyPressed(KEY_F1))
 		debug = (DebugMode)(((int)debug + 1) % (int)DebugMode::SIZE);
+
 	if (IsKeyPressed(KEY_ONE)) {
 		LoadLevel(1);
-		StopSound(level2Song);
-		PlaySound(level1Song);
+		current_stage = 1;
 	}
 	else if (IsKeyPressed(KEY_TWO)) {
 		LoadLevel(2);
-		StopSound(level1Song);
-		PlaySound(level2Song);
+		current_stage = 2;
 	}
-		
 
 	level->Update();
 	player->Update();
 	enemies->Update(player);
 	shots->Update(player->GetHitbox());
+
+	// 🛑 Derrota si el jugador se queda sin vidas
+	if (!player->IsAlive())
+	{
+		g_game->FinishPlay();
+		g_game->ChangeState(GameState::LOSE_SCREEN);
+		return;
+	}
+
+	// 🟢 Cambio a nivel 2 si alcanza 100 puntos
+	if (player->GetScore() >= 100 && current_stage == 1)
+	{
+		LoadLevel(2);
+		current_stage = 2;
+	}
+
+	// 🏁 Victoria si alcanza 200 puntos
+	if (player->GetScore() >= 200)
+	{
+		g_game->FinishPlay();
+		g_game->ChangeState(GameState::WIN_SCREEN);
+		return;
+	}
 }
 
 void Scene::Render()
@@ -175,6 +200,11 @@ void Scene::Render()
 	RenderGUI();
 }
 
+void Scene::RenderGUI() const
+{
+	DrawText(TextFormat("SCORE : %d", player->GetScore()), 10, 10, 8, LIGHTGRAY);
+	DrawText(TextFormat("LIVES : %d", player->GetLives()), 10, 20, 8, LIGHTGRAY);
+}
 
 void Scene::Release()
 {
@@ -204,9 +234,4 @@ void Scene::Release()
 		delete shots;
 		shots = nullptr;
 	}
-}
-void Scene::RenderGUI() const
-{
-	DrawText(TextFormat("SCORE : %d", player->GetScore()), 10, 10, 8, LIGHTGRAY);
-	DrawText(TextFormat("LIVES : %d", player->GetLives()), 10, 20, 8, LIGHTGRAY);
 }
