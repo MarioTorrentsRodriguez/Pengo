@@ -5,9 +5,10 @@
 
 Game::Game()
 {
-    state = GameState::MAIN_MENU;
+    state = GameState::INITIAL_SCREEN;
     scene = nullptr;
     img_menu = nullptr;
+    img_initial = nullptr;
 
     target = {};
     src = {};
@@ -60,6 +61,12 @@ AppStatus Game::LoadResources()
 {
     ResourceManager& data = ResourceManager::Instance();
     
+    if (data.LoadTexture(Resource::IMG_INITIAL, "images/initialscreen.png") != AppStatus::OK)
+    {
+        return AppStatus::ERROR;
+    }
+    img_initial = data.GetTexture(Resource::IMG_INITIAL);
+
     if (data.LoadTexture(Resource::IMG_MENU, "images/menu.png") != AppStatus::OK)
     {
         return AppStatus::ERROR;
@@ -93,31 +100,37 @@ void Game::FinishPlay()
 AppStatus Game::Update()
 {
     //Check if user attempts to close the window, either by clicking the close button or by pressing Alt+F4
-    if(WindowShouldClose()) return AppStatus::QUIT;
+    if (WindowShouldClose()) return AppStatus::QUIT;
 
     switch (state)
     {
-        case GameState::MAIN_MENU: 
-            if (IsKeyPressed(KEY_ESCAPE)) return AppStatus::QUIT;
-            if (IsKeyPressed(KEY_SPACE))
-            {
-                if(BeginPlay() != AppStatus::OK) return AppStatus::ERROR;
-                state = GameState::PLAYING;
-            }
-            break;
+    case GameState::INITIAL_SCREEN:
+        if (IsKeyPressed(KEY_SPACE)) {
+            state = GameState::MAIN_MENU;
+        }
+        break;
 
-        case GameState::PLAYING:  
-            if (IsKeyPressed(KEY_ESCAPE))
-            {
-                FinishPlay();
-                state = GameState::MAIN_MENU;
-            }
-            else
-            {
-                //Game logic
-                scene->Update();
-            }
-            break;
+    case GameState::MAIN_MENU:
+        if (IsKeyPressed(KEY_ESCAPE)) return AppStatus::QUIT;
+        if (IsKeyPressed(KEY_SPACE))
+        {
+            if (BeginPlay() != AppStatus::OK) return AppStatus::ERROR;
+            state = GameState::PLAYING;
+        }
+        break;
+
+    case GameState::PLAYING:
+        if (IsKeyPressed(KEY_ESCAPE))
+        {
+            FinishPlay();
+            state = GameState::MAIN_MENU;
+        }
+        else
+        {
+            //Game logic
+            scene->Update();
+        }
+        break;
     }
     return AppStatus::OK;
 }
@@ -129,6 +142,10 @@ void Game::Render()
     
     switch (state)
     {
+        case GameState::INITIAL_SCREEN:
+            DrawTexture(*img_initial, 0, 0, WHITE);
+            break;
+
         case GameState::MAIN_MENU:
             DrawTexture(*img_menu, 0, 0, WHITE);
             break;
@@ -153,6 +170,7 @@ void Game::Cleanup()
 void Game::UnloadResources()
 {
     ResourceManager& data = ResourceManager::Instance();
+    data.ReleaseTexture(Resource::IMG_INITIAL);
     data.ReleaseTexture(Resource::IMG_MENU);
 
     UnloadRenderTexture(target);
