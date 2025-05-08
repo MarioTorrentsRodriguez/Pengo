@@ -2,6 +2,7 @@
 #include "Enemy.h"
 #include "TileMap.h"
 #include "StaticImage.h"
+#include "Sprite.h"  // ya que ahora usas animación
 
 // Tamaño de sprite y colisión de Glorp
 #define GLORP_FRAME_SIZE        16
@@ -27,7 +28,6 @@ public:
 
     // No dispara, pero mantiene compatibilidad con interfaz
     void GetShootingPosDir(Point* pos, Point* dir) const override;
-
 private:
     // Decide una nueva dirección aleatoria
     void ChooseRandomDirection();
