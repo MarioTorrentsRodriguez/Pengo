@@ -127,10 +127,10 @@ void Player::HandleMovement()
     if (next_pos.y < 0) next_pos.y = 0;
     if (next_pos.x + width > WINDOW_WIDTH)
         next_pos.x = WINDOW_WIDTH - width;
-    const int bottom_limit = WINDOW_HEIGHT - TILE_SIZE; // sube el límite una unidad de tile
+const int bottom_limit = WINDOW_HEIGHT - TILE_SIZE; // sube el límite una unidad de tile
 
-    if (next_pos.y + height > bottom_limit)
-        next_pos.y = bottom_limit - height;
+if (next_pos.y + height > bottom_limit)
+    next_pos.y = bottom_limit - height;
 
     if (map->TestCollisionAllSides(new_box))
     {

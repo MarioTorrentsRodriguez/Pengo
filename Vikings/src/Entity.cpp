@@ -46,7 +46,7 @@ void Entity::Update()
 }
 AABB Entity::GetHitbox() const
 {
-	Point p(pos.x, pos.y - (height - 1));
+	Point p(pos.x, pos.y - (height));
 	AABB hitbox(p, width, height);
 	return hitbox;
 }

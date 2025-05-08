@@ -32,23 +32,19 @@ bool EnemyGlorp::Update(const AABB& player_hitbox)
 {
     frame_counter++;
 
+    Point old_pos = pos;
     Point next_pos = pos + dir;
-    AABB future_hitbox = GetHitbox();
-    future_hitbox.pos = next_pos;
+    AABB new_box = GetHitbox();
+    new_box.pos += dir;
 
-    if (!map->TestCollisionAllSides(future_hitbox))
+    if (map->TestCollisionAllSides(new_box))
     {
-        pos = next_pos;
+        pos = old_pos; // Cancela el movimiento si hay colisión
+        ChooseRandomDirection();
     }
     else
     {
-        ChooseRandomDirection();
-    }
-
-    if (frame_counter >= GLORP_DIRECTION_CHANGE_DELAY)
-    {
-        frame_counter = 0;
-        ChooseRandomDirection();
+        pos = next_pos;
     }
 
     return false;
