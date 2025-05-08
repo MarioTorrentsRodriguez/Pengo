@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 #include "Entity.h"
 #include "TileMap.h"
 
-// Tamaño del sprite y física
+// TamaÃ±o del sprite y fÃ­sica
 #define PLAYER_FRAME_SIZE        16
 #define PLAYER_PHYSICAL_WIDTH    16
 #define PLAYER_PHYSICAL_HEIGHT   16
@@ -14,10 +14,10 @@
 #define GRAVITY_FORCE            1
 #define ANIM_LADDER_DELAY        (2 * ANIM_DELAY)
 
-// Estados lógicos del personaje
+// Estados lÃ³gicos del personaje
 enum class State { IDLE, WALKING, JUMPING, FALLING, CLIMBING, DEAD };
 
-// Estados de animación
+// Estados de animaciÃ³n
 enum class PlayerAnim {
     WALKING_DOWN,
     WALKING_LEFT,
@@ -52,33 +52,15 @@ private:
     void SetIdleAnimation();
     void SetAnimation(int id);
     PlayerAnim GetAnimation();
-    float invincible_timer = 0.0f; // en segundos
+    void UpdateInvincibility(float delta_time);
+    void TryPushTile();
+
+    bool IsInvincible() const; // âœ… aÃ±adido
+
+    float invincible_timer = 0.0f;
     int lives = 3;
     bool moving = false;
     Point target_tile;
-    bool IsLookingRight() const;
-    bool IsLookingLeft() const;
-    bool IsAscending() const;
-    bool IsLevitating() const;
-    bool IsDescending() const;
-    bool IsInFirstHalfTile() const;
-    bool IsInSecondHalfTile() const;
-    bool IsInvincible() const;
-    void UpdateInvincibility(float delta_time);
-    void MoveX();
-    void MoveY();
-    void LogicJumping();
-    void LogicClimbing();
-    void TryDestroyTile();
-    void Stop();
-    void StartWalkingLeft();
-    void StartWalkingRight();
-    void StartFalling();
-    void StartJumping();
-    void StartClimbingUp();
-    void StartClimbingDown();
-    void ChangeAnimRight();
-    void ChangeAnimLeft();
 
     State state;
     Look look;

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <raylib.h>
 #include "Sprite.h"
 #include "Point.h"
@@ -7,14 +7,12 @@
 #include <unordered_map>
 
 enum class Tile {
-
 	// -1: area covered by entity
 	EMPTY = -1,
 	//  0: air tile
 	AIR = 0,
 
-	DIAMOND_BLOCK = 17, // Tercer fila, primera columna seg�n la imagen
-
+	DIAMOND_BLOCK = 17, // Tercer fila, primera columna según la imagen
 
 	// 0 < id < 50: static tiles
 	BLOCK_SQUARE1_TL = 1, BLOCK_SQUARE1_TR, BLOCK_SQUARE1_BL, BLOCK_SQUARE1_BR,
@@ -22,9 +20,9 @@ enum class Tile {
 	BLOCK_VERT2_T, BLOCK_VERT2_B, BLOCK_HORIZ2_L, BLOCK_HORIZ2_R, BLOCK_BLUE,
 	BLOCK_HORIZ3_L, BLOCK_HORIZ3_M, BLOCK_HORIZ3_R,
 	BLOCK_BEAM_L, BLOCK_BEAM_R,
-	
+
 	LADDER_L = 20, LADDER_R, LADDER_TOP_L, LADDER_TOP_R,
-	LOCK_RED = 30, LOCK_YELLOW, 
+	LOCK_RED = 30, LOCK_YELLOW,
 	LASER_L = 40, LASER_R,
 	BLOCK_MOVING_LEFT = 45,
 
@@ -62,26 +60,27 @@ public:
 	void Render();
 	void Release();
 	bool IsWall(int x, int y) const;
-	bool IsValidCell(int x, int y) const; 
+	bool IsValidCell(int x, int y) const;
 	void SetTile(int x, int y, Tile tile);
 	bool IsTileObject(Tile tile) const;
 	bool IsTileEntity(Tile tile) const;
+	bool IsTileSolid(Tile tile) const; // 🔓 ahora es público
 
 	//Test for collisions with walls
 	bool TestCollisionWallLeft(const AABB& box) const;
 	bool TestCollisionWallRight(const AABB& box) const;
-	
+
 	//Test collision with the ground and update 'py' with the maximum y-position to prevent
 	//penetration of the grounded tile, that is, the pixel y-position above the grounded tile.
 	//Grounded tile = solid tile (blocks) or ladder tops.
-	bool TestCollisionGround(const AABB& box, int *py) const;
-	
+	bool TestCollisionGround(const AABB& box, int* py) const;
+
 	//Test if there is a ground tile one pixel below the given box
 	bool TestFalling(const AABB& box) const;
-	
+
 	//Test if box is on ladder and update 'px' with the x-center position of the ladder
 	bool TestOnLadder(const AABB& box, int* px) const;
-	
+
 	//Test if box is on ladder top and update 'px' with the x-center position of the ladder
 	bool TestOnLadderTop(const AABB& box, int* px) const;
 
@@ -90,8 +89,6 @@ public:
 
 private:
 	void InitTileDictionary();
-
-	bool IsTileSolid(Tile tile) const;
 	bool IsTileLadderTop(Tile tile) const;
 	bool IsTileLadder(Tile tile) const;
 	bool IsTileLaser(Tile tile) const;
@@ -99,23 +96,11 @@ private:
 	bool CollisionY(const Point& p, int distance) const;
 	int GetLadderCenterPos(int pixel_x, int pixel_y) const;
 
-
-	//Tile map
-	Tile *map;
-
-	//Size of the tile map
+	Tile* map;
 	int size, width, height;
-	
-	//Dictionary of tile frames
 	std::unordered_map<int, Rectangle> dict_rect;
 
-	Sprite *laser;
-	
-	//Tile sheet
-	const Texture2D *img_tiles;
-
-	const Texture2D *img_enemies;
-
-	
+	Sprite* laser;
+	const Texture2D* img_tiles;
+	const Texture2D* img_enemies;
 };
-

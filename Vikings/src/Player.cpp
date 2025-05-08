@@ -35,20 +35,19 @@ AppStatus Player::Initialise()
 
     const int n = 16;
 
-    // Animaciones
-    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_DOWN, ANIM_DELAY);
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_DOWN, ANIM_DELAY * 2);
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_DOWN, { 0 * n, 0, n, n });
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_DOWN, { 1 * n, 0, n, n });
 
-    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_LEFT, ANIM_DELAY);
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_LEFT, ANIM_DELAY * 2);
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_LEFT, { 2 * n, 0, n, n });
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_LEFT, { 3 * n, 0, n, n });
 
-    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_UP, ANIM_DELAY);
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_UP, ANIM_DELAY * 2);
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_UP, { 4 * n, 0, n, n });
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_UP, { 5 * n, 0, n, n });
 
-    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_RIGHT, ANIM_DELAY);
+    sprite->SetAnimationDelay((int)PlayerAnim::WALKING_RIGHT, ANIM_DELAY * 2);
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_RIGHT, { 6 * n, 0, n, n });
     sprite->AddKeyFrame((int)PlayerAnim::WALKING_RIGHT, { 7 * n, 0, n, n });
 
@@ -85,7 +84,7 @@ void Player::Update()
 
     if (IsKeyPressed(KEY_E))
     {
-        TryDestroyTile();
+        TryPushTile();
     }
 }
 
@@ -98,7 +97,6 @@ void Player::HandleGridMovement()
 {
     if (!moving)
     {
-        // Solo permite iniciar movimiento si está perfectamente alineado a la grilla
         if (pos.x % TILE_SIZE != 0 || pos.y % TILE_SIZE != 0) return;
 
         if (IsKeyDown(KEY_LEFT)) {
@@ -128,6 +126,9 @@ void Player::HandleGridMovement()
             look = Look::DOWN;
             SetAnimation((int)PlayerAnim::WALKING_DOWN);
             moving = true;
+        }
+        else {
+            SetIdleAnimation();
         }
     }
 
@@ -183,8 +184,8 @@ void Player::SetIdleAnimation()
     }
 
     sprite->SetAnimation(anim_id);
-    sprite->SetManualMode();  // ← Esto detiene la animación automática
-    sprite->SetFrame(0);      // ← Mostramos solo el primer frame de esa animación
+    sprite->SetManualMode();
+    sprite->SetFrame(0);
 }
 
 void Sprite::SetFrame(int frame_index)
@@ -250,14 +251,14 @@ void Player::Release()
     }
 }
 
-void Player::TryDestroyTile()
+void Player::TryPushTile()
 {
     if (!map) return;
 
     AABB hitbox = GetHitbox();
     Point front = {
-        hitbox.pos.x + hitbox.width / 2,
-        hitbox.pos.y + hitbox.height / 2
+    pos.x + width / 2,
+    pos.y + height / 2
     };
 
     const int reach = TILE_SIZE * 0.75f;
@@ -270,12 +271,40 @@ void Player::TryDestroyTile()
     case Look::DOWN:  front.y += reach; break;
     }
 
-    int tile_x = front.x / TILE_SIZE;
-    int tile_y = front.y / TILE_SIZE;
+    int dx = 0, dy = 0;
 
-    if (map->IsValidCell(tile_x, tile_y) && map->IsWall(tile_x, tile_y))
+    switch (look)
     {
-        map->SetTile(tile_x, tile_y, Tile::AIR);
-        IncrScore(10);
+    case Look::LEFT:  dx = -1; break;
+    case Look::RIGHT: dx = 1; break;
+    case Look::UP:    dy = -1; break;
+    case Look::DOWN:  dy = 1; break;
+    }
+
+    int x = front.x / TILE_SIZE;
+    int y = front.y / TILE_SIZE;
+
+    if (!map->IsValidCell(x, y)) return;
+    Tile tile = map->GetTileIndex(x, y);
+    if (!map->IsTileSolid(tile)) return; // ✅ usar método correcto
+
+    int target_x = x;
+    int target_y = y;
+
+    while (true)
+    {
+        int nx = target_x + dx;
+        int ny = target_y + dy;
+
+        if (!map->IsValidCell(nx, ny)) break;
+        if (map->GetTileIndex(nx, ny) != Tile::AIR) break;
+        target_x = nx;
+        target_y = ny;
+    }
+
+    if (target_x != x || target_y != y)
+    {
+        map->SetTile(target_x, target_y, tile);
+        map->SetTile(x, y, Tile::AIR);
     }
 }
