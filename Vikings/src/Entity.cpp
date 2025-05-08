@@ -48,7 +48,7 @@ AABB Entity::GetHitbox() const
 {
 	Point p(pos.x, pos.y - (height - 1));
 	AABB hitbox(p, width, height);
-	return hitbox;
+	return AABB(pos, width, height); // Sin desplazamiento hacia arriba
 }
 void Entity::SetAlive(bool b)
 {
@@ -62,7 +62,7 @@ Point Entity::GetRenderingPosition() const
 {
 	Point p;
 	p.x = pos.x + width / 2 - frame_width / 2;
-	p.y = pos.y - (frame_height-1);
+	p.y = pos.y + height / 2 - frame_height / 2;
 	return p;
 }
 void Entity::Draw() const
@@ -78,16 +78,16 @@ void Entity::DrawTint(const Color& col) const
 void Entity::DrawHitbox(const Color& col) const
 {
 	Color c = col;
-	c.a = 128;		//50% transparent
+	c.a = 128;
 
-	render->DrawBox(pos.x, pos.y-(height-1), width, height, c);
-	render->DrawCorners(pos.x, pos.y-(height-1), width, height);
+	render->DrawBox(pos.x, pos.y, width, height, c);         // sin offset
+	render->DrawCorners(pos.x, pos.y, width, height);        // sin offset
 }
 void Entity::DrawHitbox(int x, int y, int w, int h, const Color& col) const
 {
 	Color c = col;
-	c.a = 128;		//50% transparent
+	c.a = 128;
 
-	render->DrawBox(x, y-(h-1), w, h, c);
-	render->DrawCorners(x, y-(h-1), w, h);
+	render->DrawBox(x, y, w, h, c);       // ya no restamos (h - 1)
+	render->DrawCorners(x, y, w, h);
 }

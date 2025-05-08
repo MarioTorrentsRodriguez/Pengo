@@ -169,12 +169,32 @@ void Player::HandleGridMovement()
 
 void Player::SetIdleAnimation()
 {
+    Sprite* sprite = dynamic_cast<Sprite*>(render);
+    if (!sprite) return;
+
+    int anim_id = 0;
+
     switch (look)
     {
-    case Look::UP:    SetAnimation((int)PlayerAnim::WALKING_UP); break;
-    case Look::DOWN:  SetAnimation((int)PlayerAnim::WALKING_DOWN); break;
-    case Look::LEFT:  SetAnimation((int)PlayerAnim::WALKING_LEFT); break;
-    case Look::RIGHT: SetAnimation((int)PlayerAnim::WALKING_RIGHT); break;
+    case Look::UP:    anim_id = (int)PlayerAnim::WALKING_UP;    break;
+    case Look::DOWN:  anim_id = (int)PlayerAnim::WALKING_DOWN;  break;
+    case Look::LEFT:  anim_id = (int)PlayerAnim::WALKING_LEFT;  break;
+    case Look::RIGHT: anim_id = (int)PlayerAnim::WALKING_RIGHT; break;
+    }
+
+    sprite->SetAnimation(anim_id);
+    sprite->SetManualMode();  // ← Esto detiene la animación automática
+    sprite->SetFrame(0);      // ← Mostramos solo el primer frame de esa animación
+}
+
+void Sprite::SetFrame(int frame_index)
+{
+    if (current_anim >= 0 &&
+        frame_index >= 0 &&
+        frame_index < animations[current_anim].frames.size())
+    {
+        current_frame = frame_index;
+        current_delay = animations[current_anim].delay;
     }
 }
 
