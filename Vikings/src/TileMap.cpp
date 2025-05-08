@@ -56,6 +56,9 @@ void TileMap::InitTileDictionary()
 	dict_rect[(int)Tile::BLOCK_BEAM_L] = { 0, 2 * n, n, n };
 	dict_rect[(int)Tile::BLOCK_BEAM_R] = { n, 2 * n, n, n };
 
+	dict_rect[(int)Tile::DIAMOND_BLOCK] = { 0 * TILE_SIZE, 2 * TILE_SIZE, TILE_SIZE, TILE_SIZE };
+
+
 	dict_rect[(int)Tile::LADDER_L] = { 2 * n, 2 * n, n, n };
 	dict_rect[(int)Tile::LADDER_R] = { 3 * n, 2 * n, n, n };
 	dict_rect[(int)Tile::LADDER_TOP_L] = { 4 * n, 2 * n, n, n };
@@ -76,7 +79,7 @@ AppStatus TileMap::Initialise()
 {
 	ResourceManager& data = ResourceManager::Instance();
 
-	if (data.LoadTexture(Resource::IMG_TILES, "images/Block.png") != AppStatus::OK)
+	if (data.LoadTexture(Resource::IMG_TILES, "images/tileset.png") != AppStatus::OK)
 	{
 		return AppStatus::ERROR;
 	}

@@ -13,6 +13,9 @@ enum class Tile {
 	//  0: air tile
 	AIR = 0,
 
+	DIAMOND_BLOCK = 17, // Tercer fila, primera columna según la imagen
+
+
 	// 0 < id < 50: static tiles
 	BLOCK_SQUARE1_TL = 1, BLOCK_SQUARE1_TR, BLOCK_SQUARE1_BL, BLOCK_SQUARE1_BR,
 	BLOCK_SQUARE2_TL, BLOCK_SQUARE2_TR, BLOCK_SQUARE2_BL, BLOCK_SQUARE2_BR,
@@ -47,6 +50,7 @@ enum class Tile {
 class TileMap
 {
 public:
+	Tile GetTileIndex(int x, int y) const;
 	void DrawDebug(const Color& color) const;
 	TileMap();
 	~TileMap();
@@ -87,7 +91,6 @@ public:
 private:
 	void InitTileDictionary();
 
-	Tile GetTileIndex(int x, int y) const;
 	bool IsTileSolid(Tile tile) const;
 	bool IsTileLadderTop(Tile tile) const;
 	bool IsTileLadder(Tile tile) const;
@@ -95,6 +98,7 @@ private:
 	bool CollisionX(const Point& p, int distance) const;
 	bool CollisionY(const Point& p, int distance) const;
 	int GetLadderCenterPos(int pixel_x, int pixel_y) const;
+
 
 	//Tile map
 	Tile *map;

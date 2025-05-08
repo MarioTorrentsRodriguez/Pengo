@@ -1,6 +1,8 @@
 ﻿#include "Scene.h"
 #include "Globals.h"
 #include "Game.h" // necesario para acceder a g_game y GameState
+#include <cstdlib>
+#include <ctime>
 
 extern Game* g_game; // para acceder a la instancia global del juego
 
@@ -27,6 +29,8 @@ Scene::~Scene()
 
 AppStatus Scene::Init()
 {
+	srand((unsigned int)time(NULL));
+
 	player = new Player({ 0,0 }, State::IDLE, Look::RIGHT);
 	if (player == nullptr) return AppStatus::ERROR;
 	if (player->Initialise() != AppStatus::OK) return AppStatus::ERROR;
@@ -69,7 +73,7 @@ AppStatus Scene::LoadLevel(int stage)
 		{1,0,1,0,0,0,1,0,0,0,1,0,1,0,1},
 		{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
 		{1,0,0,0,1,0,0,0,1,0,0,0,1,0,1},
-		{1,1,1,0,1,1,1,0,1,1,1,0,1,0,1},
+		{1,1,1,0,3,1,1,0,1,1,1,0,1,0,1},
 		{1,0,0,0,0,0,1,0,0,0,1,0,0,0,1},
 		{1,0,1,1,1,0,1,1,1,0,1,1,1,0,1},
 		{1,0,1,0,0,0,0,0,1,0,0,0,1,0,1},
@@ -110,7 +114,12 @@ AppStatus Scene::LoadLevel(int stage)
 			for (int x = 0; x < 15; ++x)
 			{
 				int value = layout[y][x];
-				map[(y + 2) * LEVEL_WIDTH + x] = value;
+				
+				if (value == 3)
+					map[(y + 2) * LEVEL_WIDTH + x] = (int)Tile::DIAMOND_BLOCK;
+				else
+					map[(y + 2) * LEVEL_WIDTH + x] = value;
+
 			}
 		}
 	}
@@ -151,7 +160,7 @@ void Scene::Update()
 	enemies->Update(player);
 	shots->Update(player->GetHitbox());
 
-	// 🛑 Derrota si el jugador se queda sin vidas
+	// Derrota si el jugador se queda sin vidas
 	if (!player->IsAlive())
 	{
 		g_game->FinishPlay();
@@ -159,14 +168,14 @@ void Scene::Update()
 		return;
 	}
 
-	// 🟢 Cambio a nivel 2 si alcanza 100 puntos
+	// Cambio a nivel 2 si alcanza 100 puntos
 	if (player->GetScore() >= 100 && current_stage == 1)
 	{
 		LoadLevel(2);
 		current_stage = 2;
 	}
 
-	// 🏁 Victoria si alcanza 200 puntos
+	// Victoria si alcanza 200 puntos
 	if (player->GetScore() >= 200)
 	{
 		g_game->FinishPlay();
