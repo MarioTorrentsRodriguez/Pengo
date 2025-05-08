@@ -5,8 +5,8 @@
 
 // Tamaño de sprite y colisión de Glorp
 #define GLORP_FRAME_SIZE        16
-#define GLORP_PHYSICAL_WIDTH    12
-#define GLORP_PHYSICAL_HEIGHT   12
+#define GLORP_PHYSICAL_WIDTH    16
+#define GLORP_PHYSICAL_HEIGHT   16
 #define GLORP_DIRECTION_CHANGE_DELAY  60
 
 // Movimiento

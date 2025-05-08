@@ -30,6 +30,8 @@ AppStatus Scene::Init()
 	player = new Player({ 0,0 }, State::IDLE, Look::RIGHT);
 	if (player == nullptr) return AppStatus::ERROR;
 	if (player->Initialise() != AppStatus::OK) return AppStatus::ERROR;
+	Point aligned = { 0, 1 }; // o la posición inicial deseada
+	player->SetPos(aligned);
 
 	level = new TileMap();
 	if (level == nullptr) return AppStatus::ERROR;
@@ -71,7 +73,7 @@ AppStatus Scene::LoadLevel(int stage)
 		{1,0,0,0,1,0,0,0,1,0,0,0,1,0,1},
 		{1,1,1,0,1,1,1,0,1,1,1,0,1,0,1},
 		{1,0,0,0,0,0,1,0,0,0,1,0,0,0,1},
-		{1,0,1,1,1,0,1,1,1,0,1,1,1,0,1},
+		{1,0,1,1,1,0,1,0,1,0,1,1,1,0,1},
 		{1,0,1,0,0,0,0,0,1,0,0,0,1,0,1},
 		{1,0,1,0,1,1,1,0,1,1,1,0,1,0,1},
 		{1,0,0,0,1,0,0,0,0,0,1,0,0,0,1},

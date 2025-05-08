@@ -4,8 +4,8 @@
 
 // Tamaño del sprite y física
 #define PLAYER_FRAME_SIZE        16
-#define PLAYER_PHYSICAL_WIDTH    12
-#define PLAYER_PHYSICAL_HEIGHT   12
+#define PLAYER_PHYSICAL_WIDTH    16
+#define PLAYER_PHYSICAL_HEIGHT   16
 #define PLAYER_SPEED             2
 #define PLAYER_LADDER_SPEED      1
 #define PLAYER_JUMP_FORCE        10
@@ -45,13 +45,17 @@ public:
     void TakeHit();
     int GetLives() const;
     bool IsAlive() const;
+
 private:
     void HandleMovement();
+    void HandleGridMovement();
     void SetIdleAnimation();
     void SetAnimation(int id);
     PlayerAnim GetAnimation();
     float invincible_timer = 0.0f; // en segundos
     int lives = 3;
+    bool moving = false;
+    Point target_tile;
     bool IsLookingRight() const;
     bool IsLookingLeft() const;
     bool IsAscending() const;
