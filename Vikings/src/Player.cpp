@@ -289,28 +289,39 @@ void Player::TryPushTile()
     Tile tile = map->GetTileIndex(x, y);
     if (!map->IsTileSolid(tile)) return;
 
-    int target_x = x;
-    int target_y = y;
+    int nx = x + dx;
+    int ny = y + dy;
+
+    // Si está bloqueado inmediatamente, romper el bloque
+    if (!map->IsValidCell(nx, ny) || map->GetTileIndex(nx, ny) != Tile::AIR)
+    {
+        map->SetTile(x, y, Tile::AIR);  // Elimina el bloque en su sitio
+        return;
+    }
+
+    // Buscar la posición final libre
+    int target_x = nx;
+    int target_y = ny;
 
     while (true)
     {
-        int nx = target_x + dx;
-        int ny = target_y + dy;
+        nx = target_x + dx;
+        ny = target_y + dy;
 
         if (!map->IsValidCell(nx, ny)) break;
         if (map->GetTileIndex(nx, ny) != Tile::AIR) break;
-
         target_x = nx;
         target_y = ny;
     }
 
-    if (target_x != x || target_y != y)
+    // Lanza el bloque animado si se puede mover
+    map->SetTile(x, y, Tile::AIR);
+
+    Point from = { x * TILE_SIZE, y * TILE_SIZE };
+    Point to = { target_x * TILE_SIZE, target_y * TILE_SIZE };
+
+    if (scene != nullptr)
     {
-        map->SetTile(x, y, Tile::AIR);
-
-        Point from = { x * TILE_SIZE, y * TILE_SIZE };
-        Point to = { target_x * TILE_SIZE, target_y * TILE_SIZE };
-
-        scene->AddMovingBlock(MovingBlock(from, to, tile));  // Usa referencia directa
+        scene->AddMovingBlock(MovingBlock(from, to, tile));
     }
 }
