@@ -5,6 +5,7 @@
 #include "Object.h"
 #include "EnemyManager.h"
 #include "ShotManager.h"
+#include "MovingBlock.h"
 
 enum class DebugMode { OFF, SPRITES_AND_HITBOXES, ONLY_HITBOXES, SIZE };
 
@@ -18,17 +19,17 @@ public:
     void Update();
     void Render();
     void Release();
-
+    void AddMovingBlock(const MovingBlock& block);
 private:
     AppStatus LoadLevel(int stage);
-    
+    std::vector<MovingBlock> moving_blocks;
     void CheckObjectCollisions();
     void ClearLevel();
     void RenderObjects() const;
     void RenderObjectsDebug(const Color& col) const;
     int current_stage = 1;
     void RenderGUI() const;
-
+    TileMap* tilemap;
     Player *player;
     
     //Level structure that contains all the static tiles

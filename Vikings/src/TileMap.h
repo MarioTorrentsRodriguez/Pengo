@@ -65,7 +65,8 @@ public:
 	bool IsTileObject(Tile tile) const;
 	bool IsTileEntity(Tile tile) const;
 	bool IsTileSolid(Tile tile) const; // 🔓 ahora es público
-
+	Rectangle GetTileRect(int tile_id) const;
+	const Texture2D& GetTilesetTexture() const;
 	//Test for collisions with walls
 	bool TestCollisionWallLeft(const AABB& box) const;
 	bool TestCollisionWallRight(const AABB& box) const;

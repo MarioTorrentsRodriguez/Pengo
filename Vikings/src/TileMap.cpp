@@ -13,6 +13,17 @@ TileMap::TileMap()
 
 	InitTileDictionary();
 }
+Rectangle TileMap::GetTileRect(int tile_id) const
+{
+	auto it = dict_rect.find(tile_id);
+	if (it != dict_rect.end()) return it->second;
+	return { 0, 0, 0, 0 };
+}
+
+const Texture2D& TileMap::GetTilesetTexture() const
+{
+	return *img_tiles;
+}
 TileMap::~TileMap()
 {
 	if (map != nullptr)

@@ -31,11 +31,12 @@ AppStatus Scene::Init()
 {
 	srand((unsigned int)time(NULL));
 
-	player = new Player({ 0,0 }, State::IDLE, Look::RIGHT);
+	player = new Player({ 0, 0 }, State::IDLE, Look::RIGHT);
 	if (player == nullptr) return AppStatus::ERROR;
 	if (player->Initialise() != AppStatus::OK) return AppStatus::ERROR;
-	Point aligned = { 0, 1 }; // o la posición inicial deseada
-	player->SetPos(aligned);
+	player->SetTileMap(tilemap);
+
+	player->SetScene(this);
 
 	level = new TileMap();
 	if (level == nullptr) return AppStatus::ERROR;
@@ -143,6 +144,11 @@ AppStatus Scene::LoadLevel(int stage)
 	return AppStatus::OK;
 }
 
+void Scene::AddMovingBlock(const MovingBlock& block)
+{
+	moving_blocks.push_back(block);
+}
+
 void Scene::Update()
 {
 	if (IsKeyPressed(KEY_F1))
@@ -184,6 +190,21 @@ void Scene::Update()
 		g_game->ChangeState(GameState::WIN_SCREEN);
 		return;
 	}
+
+	for (auto& block : moving_blocks)
+		block.Update();
+
+	moving_blocks.erase(std::remove_if(moving_blocks.begin(), moving_blocks.end(),
+		[&](const MovingBlock& b) {
+			if (b.finished)
+			{
+				int tx = b.end.x / TILE_SIZE;
+				int ty = b.end.y / TILE_SIZE;
+				level->SetTile(tx, ty, b.tile);
+				return true;
+			}
+			return false;
+		}), moving_blocks.end());
 }
 
 void Scene::Render()
@@ -192,6 +213,11 @@ void Scene::Render()
 
 	level->Render();
 
+	for (auto& b : moving_blocks)
+	{
+		Rectangle rect = level->GetTileRect((int)b.tile);
+		b.Draw(level->GetTilesetTexture(), rect);
+	}
 	if (debug == DebugMode::OFF || debug == DebugMode::SPRITES_AND_HITBOXES)
 	{
 		player->Draw();

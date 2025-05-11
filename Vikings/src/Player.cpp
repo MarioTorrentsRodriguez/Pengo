@@ -3,6 +3,8 @@
 #include "TileMap.h"
 #include "Globals.h"
 #include <raymath.h>
+#include "MovingBlock.h"
+#include "Scene.h"
 
 Player::Player(const Point& p, State s, Look view) :
     Entity(p, PLAYER_PHYSICAL_WIDTH, PLAYER_PHYSICAL_HEIGHT, PLAYER_FRAME_SIZE, PLAYER_FRAME_SIZE)
@@ -253,12 +255,12 @@ void Player::Release()
 
 void Player::TryPushTile()
 {
-    if (!map) return;
+    if (!map || !scene) return;  // Verifica que scene sea válida
 
     AABB hitbox = GetHitbox();
     Point front = {
-    pos.x + width / 2,
-    pos.y + height / 2
+        pos.x + width / 2,
+        pos.y + height / 2
     };
 
     const int reach = TILE_SIZE * 0.75f;
@@ -272,7 +274,6 @@ void Player::TryPushTile()
     }
 
     int dx = 0, dy = 0;
-
     switch (look)
     {
     case Look::LEFT:  dx = -1; break;
@@ -286,7 +287,7 @@ void Player::TryPushTile()
 
     if (!map->IsValidCell(x, y)) return;
     Tile tile = map->GetTileIndex(x, y);
-    if (!map->IsTileSolid(tile)) return; // ✅ usar método correcto
+    if (!map->IsTileSolid(tile)) return;
 
     int target_x = x;
     int target_y = y;
@@ -298,13 +299,18 @@ void Player::TryPushTile()
 
         if (!map->IsValidCell(nx, ny)) break;
         if (map->GetTileIndex(nx, ny) != Tile::AIR) break;
+
         target_x = nx;
         target_y = ny;
     }
 
     if (target_x != x || target_y != y)
     {
-        map->SetTile(target_x, target_y, tile);
         map->SetTile(x, y, Tile::AIR);
+
+        Point from = { x * TILE_SIZE, y * TILE_SIZE };
+        Point to = { target_x * TILE_SIZE, target_y * TILE_SIZE };
+
+        scene->AddMovingBlock(MovingBlock(from, to, tile));  // Usa referencia directa
     }
 }

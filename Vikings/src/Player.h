@@ -2,6 +2,9 @@
 #include "Entity.h"
 #include "TileMap.h"
 
+// Declaración adelantada para evitar dependencias circulares
+class Scene;
+
 // Tamaño del sprite y física
 #define PLAYER_FRAME_SIZE        16
 #define PLAYER_PHYSICAL_WIDTH    16
@@ -35,6 +38,9 @@ public:
     AppStatus Initialise();
     void SetTileMap(TileMap* tilemap);
 
+    // Permitir al jugador referenciar la escena para interactuar con el sistema de bloques
+    void SetScene(Scene* sceneRef) { scene = sceneRef; }
+
     void InitScore();
     void IncrScore(int n);
     int GetScore();
@@ -53,9 +59,8 @@ private:
     void SetAnimation(int id);
     PlayerAnim GetAnimation();
     void UpdateInvincibility(float delta_time);
-    void TryPushTile();
-
-    bool IsInvincible() const; // ✅ añadido
+    void TryPushTile();  // Empujar bloques
+    bool IsInvincible() const;
 
     float invincible_timer = 0.0f;
     int lives = 3;
@@ -68,5 +73,6 @@ private:
     int jump_delay;
 
     TileMap* map;
+    Scene* scene = nullptr;  // Referencia a la escena para añadir MovingBlocks
     int score;
 };
