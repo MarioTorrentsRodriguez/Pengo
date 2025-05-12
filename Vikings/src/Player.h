@@ -44,14 +44,21 @@ public:
     void InitScore();
     void IncrScore(int n);
     int GetScore();
-
+    void SetLives(int n) { lives = n; }
     void Update();
     void DrawDebug(const Color& col) const;
     void Release();
     void TakeHit();
     int GetLives() const;
     bool IsAlive() const;
-
+    void ResetMovement()
+    {
+        dir = { 0, 0 };
+        moving = false;
+        target_tile = pos;  // Añade esta línea
+    }
+    bool WasHitRecently() const { return was_hit_recently; }
+    void ClearHitFlag() { was_hit_recently = false; }
 private:
     void HandleMovement();
     void HandleGridMovement();
@@ -61,7 +68,7 @@ private:
     void UpdateInvincibility(float delta_time);
     void TryPushTile();  // Empujar bloques
     bool IsInvincible() const;
-
+    bool was_hit_recently = false;
     float invincible_timer = 0.0f;
     int lives = 3;
     bool moving = false;

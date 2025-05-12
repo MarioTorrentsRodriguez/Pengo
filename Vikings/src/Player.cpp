@@ -224,6 +224,7 @@ void Player::TakeHit()
     {
         if (lives > 0) lives--;
         invincible_timer = 0.5f;
+        was_hit_recently = true;  // << flag de golpe reciente
     }
 }
 
@@ -263,7 +264,7 @@ void Player::TryPushTile()
         pos.y + height / 2
     };
 
-    const int reach = TILE_SIZE * 0.75f;
+    const int reach = static_cast<int>(TILE_SIZE * 0.75f);
 
     switch (look)
     {

@@ -12,7 +12,7 @@ Scene::Scene()
 	level = nullptr;
 	enemies = nullptr;
 	shots = nullptr;
-
+	tilemap = nullptr;  // Agrega esta línea
 	camera.target = { 0, 0 };
 	camera.offset = { 0, MARGIN_GUI_Y };
 	camera.rotation = 0.0f;
@@ -35,7 +35,6 @@ AppStatus Scene::Init()
 	if (player == nullptr) return AppStatus::ERROR;
 	if (player->Initialise() != AppStatus::OK) return AppStatus::ERROR;
 	player->SetTileMap(tilemap);
-
 	player->SetScene(this);
 
 	level = new TileMap();
@@ -50,8 +49,8 @@ AppStatus Scene::Init()
 	enemies->SetTileMap(level);
 	enemies->SetShotManager(shots);
 
-	// Glorp se crea antes de cargar el nivel
-	Point glorpPos = { 7 * TILE_SIZE, 5 * TILE_SIZE };
+	Point glorpPos = { 7 * TILE_SIZE, 5 * TILE_SIZE };  // O cualquier posición fija o válida
+
 	AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
 	enemies->Add(glorpPos, EnemyType::GLORP, area);
 
@@ -117,12 +116,11 @@ AppStatus Scene::LoadLevel(int stage)
 			for (int x = 0; x < 15; ++x)
 			{
 				int value = layout[y][x];
-				
+
 				if (value == 3)
 					map[(y + 2) * LEVEL_WIDTH + x] = (int)Tile::DIAMOND_BLOCK;
 				else
 					map[(y + 2) * LEVEL_WIDTH + x] = value;
-
 			}
 		}
 	}
@@ -168,8 +166,16 @@ void Scene::Update()
 	enemies->Update(player);
 	shots->Update(player->GetHitbox());
 
-	// Derrota si el jugador se queda sin vidas
-	if (!player->IsAlive())
+	// Marcar reinicio pendiente si tiene entre 1 y 2 vidas
+	if (player->WasHitRecently())
+	{
+		pending_restart = true;
+		player->ClearHitFlag();
+	}
+
+
+	// Derrota si se queda sin vidas
+	if (player->GetLives() <= 0)
 	{
 		g_game->FinishPlay();
 		g_game->ChangeState(GameState::LOSE_SCREEN);
@@ -191,6 +197,7 @@ void Scene::Update()
 		return;
 	}
 
+	// Actualizar bloques en movimiento
 	for (auto& block : moving_blocks)
 		block.Update();
 
@@ -205,6 +212,17 @@ void Scene::Update()
 			}
 			return false;
 		}), moving_blocks.end());
+
+	// Ejecutar el reinicio pendiente si está marcado
+	if (pending_restart)
+	{
+		LoadLevel(current_stage);
+		player->SetTileMap(level);
+		player->SetScene(this);
+		player->SetAlive(true);
+		player->ResetMovement();
+		pending_restart = false;
+	}
 }
 
 void Scene::Render()

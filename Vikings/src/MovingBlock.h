@@ -25,8 +25,8 @@ struct MovingBlock
 
     void Update()
     {
-        current.x += direction.x * speed;
-        current.y += direction.y * speed;
+        current.x += static_cast<int>(direction.x * speed);
+        current.y += static_cast<int>(direction.y * speed);
 
         if ((direction.x != 0 && ((direction.x > 0 && current.x >= end.x) || (direction.x < 0 && current.x <= end.x))) ||
             (direction.y != 0 && ((direction.y > 0 && current.y >= end.y) || (direction.y < 0 && current.y <= end.y))))

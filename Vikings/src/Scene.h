@@ -14,7 +14,7 @@ class Scene
 public:
     Scene();
     ~Scene();
-
+ 
     AppStatus Init();
     void Update();
     void Render();
@@ -31,7 +31,7 @@ private:
     void RenderGUI() const;
     TileMap* tilemap;
     Player *player;
-    
+    bool pending_restart = false;
     //Level structure that contains all the static tiles
     TileMap *level;
     
