@@ -34,7 +34,7 @@ private:
     bool pending_restart = false;
     //Level structure that contains all the static tiles
     TileMap *level;
-    
+    Point GetRandomFreePositionFromLayout(const int layout[15][15]);
     //Dynamic objects of the level: items and collectables
     std::vector<Object*> objects;
 

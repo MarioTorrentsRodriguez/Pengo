@@ -5,7 +5,45 @@
 #include <ctime>
 
 extern Game* g_game; // para acceder a la instancia global del juego
+int layouts[2][15][15] = {
+	// Nivel 1
+	{
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{6,11,11,11,11,11,11,11,11,11,11,11,11,11,9},
+	{5,0,1,0,0,0,1,0,0,0,1,0,1,0,2},
+	{5,0,1,0,1,0,1,0,1,0,1,0,1,0,2},
+	{5,0,0,0,1,0,0,0,1,0,0,0,1,0,2},
+	{5,1,1,0,3,1,1,0,1,1,1,0,1,0,2},
+	{5,0,0,0,0,0,1,0,0,0,1,0,0,0,2},
+	{5,0,1,1,1,0,1,0,1,0,1,1,1,0,2},
+	{5,0,1,0,0,0,0,0,1,0,0,0,1,0,2},
+	{5,0,1,0,1,1,1,0,1,1,1,0,1,0,2},
+	{5,0,0,0,1,0,0,0,0,0,1,0,0,0,2},
+	{5,1,1,0,1,0,1,1,1,0,1,0,1,1,2},
+	{5,0,0,0,1,0,0,0,1,1,1,0,1,0,2},
+	{5,0,1,0,0,0,1,0,0,0,0,0,0,0,2},
+	{16,7,7,7,7,7,7,7,7,7,7,7,7,7,15},
+},
 
+	// Nivel 2
+	{
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,0,0,0,1,0,0,0,0,1,0,0,1,0,1},
+	{1,0,1,0,1,0,1,1,0,1,0,1,0,0,1},
+	{1,0,1,0,0,0,0,1,0,0,0,0,1,0,1},
+	{1,0,1,1,1,1,0,1,1,1,0,1,0,0,1},
+	{1,0,0,0,0,1,0,0,0,1,0,1,0,1,1},
+	{1,1,1,1,0,1,1,1,0,1,0,1,0,0,1},
+	{1,0,0,1,0,0,0,1,0,0,0,1,0,1,1},
+	{1,0,1,0,1,1,0,1,1,1,0,1,0,0,1},
+	{1,0,1,0,0,1,0,0,0,1,0,1,1,0,1},
+	{1,0,1,0,1,0,1,1,0,1,0,0,0,0,1},
+	{1,0,0,1,0,0,0,1,0,0,0,1,1,0,1},
+	{1,0,1,0,0,1,0,0,0,1,0,1,0,0,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+},
+};
 Scene::Scene()
 {
 	player = nullptr;
@@ -26,6 +64,30 @@ Scene::~Scene()
 {
 	Release();
 }
+
+Point Scene::GetRandomFreePositionFromLayout(const int layout[15][15])
+{
+	std::vector<Point> freePositions;
+
+	// Saltamos bordes: y = 1..13, x = 1..13
+	for (int y = 1; y < 14; ++y)
+	{
+		for (int x = 1; x < 14; ++x)
+		{
+			if (layout[y][x] == 0)
+			{
+				freePositions.push_back(Point(x * TILE_SIZE, (y + 2) * TILE_SIZE));
+			}
+		}
+	}
+
+	if (freePositions.empty())
+		return Point(7 * TILE_SIZE, 5 * TILE_SIZE);  // fallback
+
+	int idx = GetRandomValue(0, (int)freePositions.size() - 1);
+	return freePositions[idx];
+}
+
 
 AppStatus Scene::Init()
 {
@@ -49,62 +111,53 @@ AppStatus Scene::Init()
 	enemies->SetTileMap(level);
 	enemies->SetShotManager(shots);
 
-	Point glorpPos = { 7 * TILE_SIZE, 5 * TILE_SIZE };  // O cualquier posición fija o válida
-
-	AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
-	enemies->Add(glorpPos, EnemyType::GLORP, area);
-
+	// Cargar el primer nivel antes de generar enemigos
 	if (LoadLevel(1) != AppStatus::OK) return AppStatus::ERROR;
 	player->SetTileMap(level);
 	current_stage = 1;
 
+	// Obtener el layout actual del nivel
+	const int(*layout)[15] = layouts[current_stage - 1];
+
+	AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
+
+	// Generar múltiples enemigos en tiles con valor 0 (aire)
+	const int enemyCount = 5;
+	std::vector<Point> usedPositions;
+
+	for (int i = 0; i < enemyCount; ++i)
+	{
+		Point pos;
+		bool unique = false;
+
+		while (!unique)
+		{
+			pos = GetRandomFreePositionFromLayout(layout);
+			unique = true;
+
+			for (const Point& used : usedPositions)
+			{
+				if (used.x == pos.x && used.y == pos.y)
+				{
+					unique = false;
+					break;
+				}
+			}
+		}
+
+		usedPositions.push_back(pos);
+		enemies->Add(pos, EnemyType::GLORP, area);
+	}
+
 	return AppStatus::OK;
 }
+
 
 AppStatus Scene::LoadLevel(int stage)
 {
 	int size = LEVEL_WIDTH * LEVEL_HEIGHT;
 	int* map = new int[size];
 	for (int i = 0; i < size; ++i) map[i] = 0;
-
-	int layouts[2][15][15] = {
-		// Nivel 1
-		{
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,0,1,0,0,0,1,0,0,0,1,0,1,0,1},
-		{1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
-		{1,0,0,0,1,0,0,0,1,0,0,0,1,0,1},
-		{1,1,1,0,3,1,1,0,1,1,1,0,1,0,1},
-		{1,0,0,0,0,0,1,0,0,0,1,0,0,0,1},
-		{1,0,1,1,1,0,1,0,1,0,1,1,1,0,1},
-		{1,0,1,0,0,0,0,0,1,0,0,0,1,0,1},
-		{1,0,1,0,1,1,1,0,1,1,1,0,1,0,1},
-		{1,0,0,0,1,0,0,0,0,0,1,0,0,0,1},
-		{1,1,1,0,1,0,1,1,1,0,1,0,1,1,1},
-		{1,0,0,0,1,0,0,0,1,0,0,0,1,0,1},
-		{1,0,1,1,1,1,1,0,1,1,1,1,1,0,1},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-		},
-		// Nivel 2
-		{
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,0,0,0,1,0,0,0,0,1,0,0,0,0,1},
-		{1,0,1,0,1,0,1,1,0,1,0,1,0,0,1},
-		{1,0,1,0,0,0,0,1,0,0,0,1,1,0,1},
-		{1,0,1,1,1,1,0,1,1,1,0,1,0,0,1},
-		{1,0,0,0,0,1,0,0,0,1,0,1,0,1,1},
-		{1,1,1,1,0,1,1,1,0,1,0,1,0,0,1},
-		{1,0,0,1,0,0,0,1,0,0,0,1,0,1,1},
-		{1,0,1,1,1,1,0,1,1,1,0,1,0,0,1},
-		{1,0,1,0,0,1,0,0,0,1,0,1,1,0,1},
-		{1,0,1,0,1,1,1,1,0,1,0,0,0,0,1},
-		{1,0,0,0,0,0,0,1,0,0,0,1,1,0,1},
-		{1,0,1,1,1,1,0,1,1,1,0,1,0,0,1},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-		}
-	};
 
 	int middle_x = 7, middle_y = 7;
 
