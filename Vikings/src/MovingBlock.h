@@ -1,7 +1,7 @@
 #pragma once
 #include "TileMap.h"
 #include "Globals.h"
-
+#include <vector>
 struct MovingBlock
 {
     Point start;
@@ -12,7 +12,14 @@ struct MovingBlock
     float speed;
     bool finished = false;
     float GetSpeed() const { return speed; }
-
+struct TileBlink {
+        Point tile_pos;
+        Tile original;
+        Tile alternate;
+        float interval;     // tiempo entre parpadeos
+        int remaining_blinks;
+        float timer;        // acumulador de tiempo
+    };
     MovingBlock(Point s, Point e, Tile t)
         : start(s), end(e), current(s), tile(t)
     {

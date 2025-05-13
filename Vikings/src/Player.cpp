@@ -5,7 +5,7 @@
 #include <raymath.h>
 #include "MovingBlock.h"
 #include "Scene.h"
-
+#include <vector>
 inline bool IsIndestructibleBlock(Tile tile)
 {
     return tile == Tile::BLOCK_SQUARE1_TR ||
@@ -323,7 +323,17 @@ void Player::TryPushTile()
             if (map->GetTileIndex(p.x, p.y) != tile) continue;
 
             visited[p.x][p.y] = true;
-            map->SetTile(p.x, p.y, replaceWith);
+            if(scene)
+            {
+                TileBlink blink;
+                blink.tile_pos = { p.x, p.y };
+                blink.original = tile;
+                blink.alternate = replaceWith;
+                blink.interval = 0.15f;          // tiempo entre cada cambio
+                blink.remaining_blinks = 4;      // 2 veces (on → off → on → off → final)
+                blink.timer = 0.0f;
+                scene->tile_blinks.push_back(blink);
+            }
 
             stack.push_back({ p.x + 1, p.y });
             stack.push_back({ p.x - 1, p.y });

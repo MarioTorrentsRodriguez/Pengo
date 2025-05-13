@@ -2,7 +2,7 @@
 #include "Globals.h"
 #include "ResourceManager.h"
 #include <stdio.h>
-
+#include <vector>
 Game::Game()
 {
     state = GameState::CONTROLS_SCREEN;

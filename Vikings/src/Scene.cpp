@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <raylib.h>
-
+#include <vector>
 
 extern Game* g_game; // para acceder a la instancia global del juego
 int layouts[2][15][15] = {
@@ -405,6 +405,27 @@ void Scene::Update()
 			}
 			return false;
 		}), moving_blocks.end());
+	for (auto it = tile_blinks.begin(); it != tile_blinks.end(); )
+	{
+		it->timer += GetFrameTime();
+		if (it->timer >= it->interval)
+		{
+			it->timer = 0.0f;
+			Tile current = level->GetTileIndex(it->tile_pos.x, it->tile_pos.y);
+			Tile next = (current == it->original) ? it->alternate : it->original;
+			level->SetTile(it->tile_pos.x, it->tile_pos.y, next);
+
+			--it->remaining_blinks;
+			if (it->remaining_blinks <= 0)
+			{
+				// ✅ Restaurar el bloque original después del parpadeo
+				level->SetTile(it->tile_pos.x, it->tile_pos.y, it->original);
+				it = tile_blinks.erase(it);
+				continue;
+			}
+		}
+		++it;
+	}
 
 }
 

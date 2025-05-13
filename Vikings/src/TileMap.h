@@ -5,7 +5,7 @@
 #include "AABB.h"
 #include "Globals.h"
 #include <unordered_map>
-
+#include <vector>
 enum class Tile {
 	// -1: area covered by entity
 	EMPTY = -1,

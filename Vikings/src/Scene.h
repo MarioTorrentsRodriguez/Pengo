@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <raylib.h>
 #include "Player.h"
 #include "TileMap.h"
@@ -6,15 +6,27 @@
 #include "EnemyManager.h"
 #include "ShotManager.h"
 #include "MovingBlock.h"
+#include <vector>
 
 enum class DebugMode { OFF, SPRITES_AND_HITBOXES, ONLY_HITBOXES, SIZE };
+
+// ✅ DEFINICIÓN REQUERIDA ANTES DE USO
+struct TileBlink {
+    Point tile_pos;
+    Tile original;
+    Tile alternate;
+    float interval;
+    int remaining_blinks;
+    float timer;
+};
 
 class Scene
 {
 public:
     Scene();
     ~Scene();
- 
+    std::vector<TileBlink> tile_blinks;
+
     AppStatus Init();
     void Update();
     void Render();
@@ -30,24 +42,16 @@ private:
     int current_stage = 1;
     void RenderGUI() const;
     TileMap* tilemap;
-    Player *player;
+    Player* player;
     bool pending_restart = false;
-    //Level structure that contains all the static tiles
-    TileMap *level;
+    TileMap* level;
     Point GetRandomFreePositionFromLayout(const int layout[15][15]);
-    //Dynamic objects of the level: items and collectables
     std::vector<Object*> objects;
-
-    //Enemies present in the level
-    EnemyManager *enemies;
+    EnemyManager* enemies;
     EnemyManager enemyManager;
-
-    //Shots thrown by enemies
-    ShotManager *shots;
-    Sound menuSong = LoadSound("audio/mainMenu.mp3");
+    ShotManager* shots;
     Camera2D camera;
     Sound level1Song = LoadSound("audio/level1Song.mp3");
     Sound level2Song = LoadSound("audio/level2Song.mp3");
     DebugMode debug;
 };
-
