@@ -6,17 +6,18 @@
 #include "MovingBlock.h"
 #include "Scene.h"
 
-inline bool IsStaticBlock(Tile tile)
+inline bool IsIndestructibleBlock(Tile tile)
 {
-    return tile == Tile::BLOCK_SQUARE1_TR || // 2
-        tile == Tile::BLOCK_SQUARE1_BL || // 3
-        tile == Tile::BLOCK_SQUARE2_TL || // 5
-        tile == Tile::BLOCK_SQUARE2_TR || // 6
-        tile == Tile::BLOCK_SQUARE2_BL || // 7
-        tile == Tile::BLOCK_SQUARE2_BR || // 8
-        tile == Tile::BLOCK_VERT2_B || // 10
-        tile == Tile::BLOCK_BLUE || // 13
-        tile == Tile::BLOCK_HORIZ3_R;      // 16
+    return tile == Tile::BLOCK_SQUARE1_TR ||
+        tile == Tile::BLOCK_SQUARE1_BL ||
+        tile == Tile::BLOCK_SQUARE2_TL ||
+        tile == Tile::BLOCK_SQUARE2_TR ||
+        tile == Tile::BLOCK_SQUARE2_BL ||
+        tile == Tile::BLOCK_SQUARE2_BR ||
+        tile == Tile::BLOCK_VERT2_B ||
+        tile == Tile::BLOCK_BLUE ||
+        tile == Tile::BLOCK_HORIZ3_R ||
+        tile == Tile::DIAMOND_BLOCK;  // 💎 ← aún se puede empujar, solo no romper
 }
 
 
@@ -271,7 +272,7 @@ void Player::Release()
 
 void Player::TryPushTile()
 {
-    if (!map || !scene) return;  // Verifica que scene sea válida
+    if (!map || !scene) return;
 
     AABB hitbox = GetHitbox();
     Point front = {
@@ -302,23 +303,22 @@ void Player::TryPushTile()
     int y = front.y / TILE_SIZE;
 
     if (!map->IsValidCell(x, y)) return;
+
     Tile tile = map->GetTileIndex(x, y);
     if (!map->IsTileSolid(tile)) return;
-    if (IsStaticBlock(tile)) return;
 
     int nx = x + dx;
     int ny = y + dy;
 
-    // Si está bloqueado inmediatamente, romper el bloque
+    // Si está bloqueado inmediatamente, romper solo si no es indestructible
     if (!map->IsValidCell(nx, ny) || map->GetTileIndex(nx, ny) != Tile::AIR)
     {
-        // ❌ No destruir si es bloque de diamante
-        if (tile != Tile::DIAMOND_BLOCK)
+        if (!IsIndestructibleBlock(tile))
             map->SetTile(x, y, Tile::AIR);
         return;
     }
 
-    // Buscar la posición final libre
+    // Buscar posición final libre
     int target_x = nx;
     int target_y = ny;
 
@@ -329,18 +329,55 @@ void Player::TryPushTile()
 
         if (!map->IsValidCell(nx, ny)) break;
         if (map->GetTileIndex(nx, ny) != Tile::AIR) break;
+
         target_x = nx;
         target_y = ny;
     }
 
-    // Lanza el bloque animado si se puede mover
+    // Transformación de paredes (hacerlo antes de borrar el bloque)
+    if (tile == static_cast<Tile>(2) ||
+        tile == static_cast<Tile>(13) ||
+        tile == static_cast<Tile>(7) ||
+        tile == static_cast<Tile>(16))
+    {
+        const Tile replaceWith =
+            (tile == static_cast<Tile>(2) || tile == static_cast<Tile>(13)) ? static_cast<Tile>(8) :
+            (tile == static_cast<Tile>(7) || tile == static_cast<Tile>(16)) ? static_cast<Tile>(10) :
+            Tile::AIR;
+
+        std::vector<Point> stack;
+        std::vector<std::vector<bool>> visited(LEVEL_WIDTH, std::vector<bool>(LEVEL_HEIGHT, false));
+
+        stack.push_back({ x, y });
+
+        while (!stack.empty())
+        {
+            Point p = stack.back();
+            stack.pop_back();
+
+            if (!map->IsValidCell(p.x, p.y)) continue;
+            if (visited[p.x][p.y]) continue;
+            if (map->GetTileIndex(p.x, p.y) != tile) continue;
+
+            visited[p.x][p.y] = true;
+            map->SetTile(p.x, p.y, replaceWith);
+
+            stack.push_back({ p.x + 1, p.y });
+            stack.push_back({ p.x - 1, p.y });
+            stack.push_back({ p.x, p.y + 1 });
+            stack.push_back({ p.x, p.y - 1 });
+        }
+
+        // Cancelar empuje
+        return;
+    }
+
+    // Lanza el bloque
     map->SetTile(x, y, Tile::AIR);
 
     Point from = { x * TILE_SIZE, y * TILE_SIZE };
     Point to = { target_x * TILE_SIZE, target_y * TILE_SIZE };
 
-    if (scene != nullptr)
-    {
-        scene->AddMovingBlock(MovingBlock(from, to, tile));
-    }
+    scene->AddMovingBlock(MovingBlock(from, to, tile));
 }
+
