@@ -209,14 +209,18 @@ void Scene::Update()
 
 	if (IsKeyPressed(KEY_F2))
 	{
-		Vector2 worldPos = GetScreenToWorld2D(GetMousePosition(), camera);
+		Vector2 mouse = GetMousePosition();
+		mouse.x /= 2.0f;
+		mouse.y /= 2.0f;
+
+		Vector2 worldPos = GetScreenToWorld2D(mouse, camera);
 		int tileX = (int)(worldPos.x / TILE_SIZE);
 		int tileY = (int)(worldPos.y / TILE_SIZE);
 
 		if (level && level->IsValidCell(tileX, tileY))
-{
-    level->SetTile(tileX, tileY, static_cast<Tile>(1)); // bloque azul
-}
+		{
+			level->SetTile(tileX, tileY, static_cast<Tile>(1)); // bloque azul
+		}
 	}
 	if (IsKeyPressed(KEY_ONE)) {
 		LoadLevel(1);
@@ -348,10 +352,19 @@ void Scene::Render()
 
 	if (debug != DebugMode::OFF)
 	{
-		Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
-		int tx = ((int)(mouse.x) / TILE_SIZE) * TILE_SIZE;
-		int ty = ((int)(mouse.y) / TILE_SIZE) * TILE_SIZE;
-		DrawRectangleLines(tx, ty, TILE_SIZE, TILE_SIZE, BLUE);
+		Vector2 mouse = GetMousePosition();
+		mouse.x /= 2.0f;
+		mouse.y /= 2.0f;
+		Vector2 worldPos = GetScreenToWorld2D(mouse, camera);
+		int tileX = (int)(worldPos.x / TILE_SIZE);
+		int tileY = (int)(worldPos.y / TILE_SIZE);
+
+		if (level && level->IsValidCell(tileX, tileY))
+		{
+			int px = tileX * TILE_SIZE;
+			int py = tileY * TILE_SIZE;
+			DrawRectangleLines(px, py, TILE_SIZE, TILE_SIZE, BLUE);
+		}
 	}
 	if (debug == DebugMode::SPRITES_AND_HITBOXES || debug == DebugMode::ONLY_HITBOXES)
 	{
