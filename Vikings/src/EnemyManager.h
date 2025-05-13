@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 #include "Enemy.h"
 #include "ShotManager.h"
@@ -19,8 +19,17 @@ public:
     void DrawDebug() const;
     void Release();
 
+    // ✅ Nueva función para empujar enemigos sincronizados con el bloque
+    void PushEnemiesByBlock(const AABB& blockBox, const Point& direction, float speed);
+    void SetBeingPushed(bool value) { being_pushed = value; }
+    bool IsBeingPushed() const { return being_pushed; }
+    // ✅ Getter para acceder a la lista de enemigos desde Scene
+    std::vector<Enemy*>& GetEnemies() { return enemies; }
+
 private:
+    bool being_pushed = false;
     std::vector<Enemy*> enemies;
     TileMap* tilemap;
     ShotManager* shots;
 };
+

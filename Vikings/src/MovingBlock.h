@@ -11,6 +11,7 @@ struct MovingBlock
     Tile tile;
     float speed;
     bool finished = false;
+    float GetSpeed() const { return speed; }
 
     MovingBlock(Point s, Point e, Tile t)
         : start(s), end(e), current(s), tile(t)

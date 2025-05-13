@@ -166,13 +166,12 @@ void Scene::Update()
 	enemies->Update(player);
 	shots->Update(player->GetHitbox());
 
-	// Marcar reinicio pendiente si tiene entre 1 y 2 vidas
+	// Marcar reinicio pendiente si recibió daño
 	if (player->WasHitRecently())
 	{
 		pending_restart = true;
 		player->ClearHitFlag();
 	}
-
 
 	// Derrota si se queda sin vidas
 	if (player->GetLives() <= 0)
@@ -197,10 +196,21 @@ void Scene::Update()
 		return;
 	}
 
-	// Actualizar bloques en movimiento
+	// Actualizar bloques en movimiento y empujar enemigos sincronizados
 	for (auto& block : moving_blocks)
+	{
 		block.Update();
 
+		AABB blockBox = { block.current, TILE_SIZE, TILE_SIZE };
+
+		Point dir = block.end - block.start;
+		if (dir.x != 0) dir.x = (dir.x > 0) ? 1 : -1;
+		if (dir.y != 0) dir.y = (dir.y > 0) ? 1 : -1;
+
+		enemies->PushEnemiesByBlock(blockBox, dir, block.GetSpeed()); // Movimiento sincronizado
+	}
+
+	// Eliminar bloques terminados y liberar enemigos arrastrados
 	moving_blocks.erase(std::remove_if(moving_blocks.begin(), moving_blocks.end(),
 		[&](const MovingBlock& b) {
 			if (b.finished)
@@ -208,12 +218,20 @@ void Scene::Update()
 				int tx = b.end.x / TILE_SIZE;
 				int ty = b.end.y / TILE_SIZE;
 				level->SetTile(tx, ty, b.tile);
+
+				// ✅ Liberar enemigos arrastrados al finalizar
+				for (auto& enemy : enemies->GetEnemies())
+				{
+					if (enemy->IsBeingPushed())
+						enemy->SetBeingPushed(false);
+				}
+
 				return true;
 			}
 			return false;
 		}), moving_blocks.end());
 
-	// Ejecutar el reinicio pendiente si está marcado
+	// Reinicio del nivel si fue golpeado
 	if (pending_restart)
 	{
 		LoadLevel(current_stage);
@@ -224,6 +242,8 @@ void Scene::Update()
 		pending_restart = false;
 	}
 }
+
+
 
 void Scene::Render()
 {

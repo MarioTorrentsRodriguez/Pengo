@@ -15,12 +15,16 @@ public:
 	Entity(const Point& p, int width, int height);
 	Entity(const Point& p, int width, int height, int frame_width, int frame_height);
 	virtual ~Entity();
-
+	Point GetPosition() const { return pos; }
 	void Set(const Point& p, const Point& d, int w, int h, int framew, int frameh);
 	void SetPos(const Point& p);
 	void Update();
 	AABB GetHitbox() const;
-
+	bool being_pushed = false;
+	int GetWidth() const { return width; }
+	int GetHeight() const { return height; }
+	void SetBeingPushed(bool value) { being_pushed = value; }
+	bool IsBeingPushed() const { return being_pushed; }
 	void SetAlive(bool b);
 	bool IsAlive() const;
 
