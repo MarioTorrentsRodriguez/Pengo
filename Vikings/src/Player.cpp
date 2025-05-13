@@ -330,7 +330,7 @@ void Player::TryPushTile()
                 blink.original = tile;
                 blink.alternate = replaceWith;
                 blink.interval = 0.15f;          // tiempo entre cada cambio
-                blink.remaining_blinks = 4;      // 2 veces (on → off → on → off → final)
+                blink.remaining_blinks = 6;      // 2 veces (on → off → on → off → final)
                 blink.timer = 0.0f;
                 scene->tile_blinks.push_back(blink);
             }
