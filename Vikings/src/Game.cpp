@@ -87,10 +87,10 @@ AppStatus Game::LoadResources()
         return AppStatus::ERROR;
     img_lose = data.GetTexture(Resource::IMG_LOSE);
 
-    Sound menuSong = LoadSound("audio/mainMenu.mp3");
-    Sound level1Song = LoadSound("audio/level1Song.mp3");
-    Sound level2Song = LoadSound("audio/level2Song.mp3");
-    PlaySound(menuSong);
+    //Sound menuSong = LoadSound("audio/mainMenu.mp3");
+    //Sound level1Song = LoadSound("audio/level1Song.mp3");
+    //Sound level2Song = LoadSound("audio/level2Song.mp3");
+    //PlaySound(menuSong);
 
     return AppStatus::OK;
 }
@@ -223,12 +223,12 @@ void Game::Render()
 }
 void Game::Cleanup()
 {
-    UnloadResources();
+    /*UnloadResources();
     UnloadSound(menuSong);
     UnloadSound(level1Song);
     UnloadSound(level2Song);
     CloseAudioDevice();
-    CloseWindow();
+    CloseWindow();*/
 }
 void Game::UnloadResources()
 {
