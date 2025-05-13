@@ -282,21 +282,14 @@ void Player::TryPushTile()
 
     const int reach = static_cast<int>(TILE_SIZE * 0.75f);
 
-    switch (look)
-    {
-    case Look::LEFT:  front.x -= reach; break;
-    case Look::RIGHT: front.x += reach; break;
-    case Look::UP:    front.y -= reach; break;
-    case Look::DOWN:  front.y += reach; break;
-    }
-
+    // Calcular dirección y punto de contacto según dirección
     int dx = 0, dy = 0;
     switch (look)
     {
-    case Look::LEFT:  dx = -1; break;
-    case Look::RIGHT: dx = 1; break;
-    case Look::UP:    dy = -1; break;
-    case Look::DOWN:  dy = 1; break;
+    case Look::LEFT:  dx = -1; front.x -= reach; break;
+    case Look::RIGHT: dx = 1;  front.x += reach; break;
+    case Look::UP:    dy = -1; front.y -= reach; break;
+    case Look::DOWN:  dy = 1;  front.y += reach; break;
     }
 
     int x = front.x / TILE_SIZE;
@@ -307,38 +300,9 @@ void Player::TryPushTile()
     Tile tile = map->GetTileIndex(x, y);
     if (!map->IsTileSolid(tile)) return;
 
-    int nx = x + dx;
-    int ny = y + dy;
-
-    // Si está bloqueado inmediatamente, romper solo si no es indestructible
-    if (!map->IsValidCell(nx, ny) || map->GetTileIndex(nx, ny) != Tile::AIR)
-    {
-        if (!IsIndestructibleBlock(tile))
-            map->SetTile(x, y, Tile::AIR);
-        return;
-    }
-
-    // Buscar posición final libre
-    int target_x = nx;
-    int target_y = ny;
-
-    while (true)
-    {
-        nx = target_x + dx;
-        ny = target_y + dy;
-
-        if (!map->IsValidCell(nx, ny)) break;
-        if (map->GetTileIndex(nx, ny) != Tile::AIR) break;
-
-        target_x = nx;
-        target_y = ny;
-    }
-
-    // Transformación de paredes (hacerlo antes de borrar el bloque)
-    if (tile == static_cast<Tile>(2) ||
-        tile == static_cast<Tile>(13) ||
-        tile == static_cast<Tile>(7) ||
-        tile == static_cast<Tile>(16))
+    // ✅ Transformar si es bloque especial (aunque no se pueda empujar)
+    if (tile == static_cast<Tile>(2) || tile == static_cast<Tile>(13) ||
+        tile == static_cast<Tile>(7) || tile == static_cast<Tile>(16))
     {
         const Tile replaceWith =
             (tile == static_cast<Tile>(2) || tile == static_cast<Tile>(13)) ? static_cast<Tile>(8) :
@@ -347,7 +311,6 @@ void Player::TryPushTile()
 
         std::vector<Point> stack;
         std::vector<std::vector<bool>> visited(LEVEL_WIDTH, std::vector<bool>(LEVEL_HEIGHT, false));
-
         stack.push_back({ x, y });
 
         while (!stack.empty())
@@ -368,16 +331,40 @@ void Player::TryPushTile()
             stack.push_back({ p.x, p.y - 1 });
         }
 
-        // Cancelar empuje
+        return;  // 👈 no empujamos si se transforma
+    }
+
+    // 🚫 Cancelar empuje si bloque inmediato está ocupado
+    int nx = x + dx;
+    int ny = y + dy;
+    if (!map->IsValidCell(nx, ny) || map->GetTileIndex(nx, ny) != Tile::AIR)
+    {
+        if (!IsIndestructibleBlock(tile))
+            map->SetTile(x, y, Tile::AIR);
         return;
     }
 
-    // Lanza el bloque
-    map->SetTile(x, y, Tile::AIR);
+    // 🔍 Buscar posición final libre
+    int target_x = nx;
+    int target_y = ny;
+    while (true)
+    {
+        nx = target_x + dx;
+        ny = target_y + dy;
 
+        if (!map->IsValidCell(nx, ny)) break;
+        if (map->GetTileIndex(nx, ny) != Tile::AIR) break;
+
+        target_x = nx;
+        target_y = ny;
+    }
+
+    // ✅ Lanzar el bloque
+    map->SetTile(x, y, Tile::AIR);
     Point from = { x * TILE_SIZE, y * TILE_SIZE };
     Point to = { target_x * TILE_SIZE, target_y * TILE_SIZE };
 
     scene->AddMovingBlock(MovingBlock(from, to, tile));
 }
+
 
