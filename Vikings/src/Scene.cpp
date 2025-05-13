@@ -222,6 +222,38 @@ void Scene::Update()
 			level->SetTile(tileX, tileY, static_cast<Tile>(1)); // bloque azul
 		}
 	}
+	if (IsKeyPressed(KEY_F3))
+	{
+		Vector2 mouse = GetMousePosition();
+		mouse.x /= 2.0f;
+		mouse.y /= 2.0f;
+
+		Vector2 worldPos = GetScreenToWorld2D(mouse, camera);
+		int tileX = (int)(worldPos.x / TILE_SIZE);
+		int tileY = (int)(worldPos.y / TILE_SIZE);
+
+		if (level && level->IsValidCell(tileX, tileY))
+		{
+			level->SetTile(tileX, tileY, Tile::AIR); // reemplaza por aire (0)
+		}
+	}
+	if (IsKeyPressed(KEY_F4))
+	{
+		Vector2 mouse = GetMousePosition();
+		mouse.x /= 2.0f;
+		mouse.y /= 2.0f;
+
+		Vector2 worldPos = GetScreenToWorld2D(mouse, camera);
+		int tileX = (int)(worldPos.x / TILE_SIZE);
+		int tileY = (int)(worldPos.y / TILE_SIZE);
+
+		if (level && level->IsValidCell(tileX, tileY))
+		{
+			Point spawnPos = { tileX * TILE_SIZE, tileY * TILE_SIZE };
+			AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
+			enemies->Add(spawnPos, EnemyType::GLORP, area);
+		}
+	}
 	if (IsKeyPressed(KEY_ONE)) {
 		LoadLevel(1);
 		current_stage = 1;
