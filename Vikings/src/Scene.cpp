@@ -219,7 +219,34 @@ void Scene::Update()
 				int ty = b.end.y / TILE_SIZE;
 				level->SetTile(tx, ty, b.tile);
 
-				// ✅ Liberar enemigos arrastrados al finalizar
+				// AABB del bloque final
+				AABB finalBox = { b.end, TILE_SIZE, TILE_SIZE };
+
+				for (auto& enemy : enemies->GetEnemies())
+				{
+					if (!enemy->IsAlive()) continue;
+
+					if (enemy->GetHitbox().Intersects(finalBox))
+					{
+						AABB hitbox = enemy->GetHitbox();
+
+						// Comprobación de colisiones en los lados
+						bool leftSolid = level->TestCollisionWallLeft(hitbox);
+						bool rightSolid = level->TestCollisionWallRight(hitbox);
+
+						// Comprobación de colisión en el suelo (ajusta la Y si colisiona)
+						int py = hitbox.pos.y;
+						bool groundSolid = level->TestCollisionGround(hitbox, &py);
+
+						// Si está atrapado entre dos lados o aplastado contra el suelo
+						if ((leftSolid && rightSolid) || groundSolid)
+						{
+							enemy->SetAlive(false);  // ✅ Enemigo aplastado
+						}
+					}
+				}
+
+				// Liberar enemigos empujados
 				for (auto& enemy : enemies->GetEnemies())
 				{
 					if (enemy->IsBeingPushed())
@@ -231,16 +258,6 @@ void Scene::Update()
 			return false;
 		}), moving_blocks.end());
 
-	// Reinicio del nivel si fue golpeado
-	if (pending_restart)
-	{
-		LoadLevel(current_stage);
-		player->SetTileMap(level);
-		player->SetScene(this);
-		player->SetAlive(true);
-		player->ResetMovement();
-		pending_restart = false;
-	}
 }
 
 
