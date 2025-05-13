@@ -312,7 +312,8 @@ void Player::TryPushTile()
     // Si está bloqueado inmediatamente, romper el bloque
     if (!map->IsValidCell(nx, ny) || map->GetTileIndex(nx, ny) != Tile::AIR)
     {
-        if (!IsStaticBlock(tile))  // ✅ Solo se puede destruir si no es estático
+        // ❌ No destruir si es bloque de diamante
+        if (tile != Tile::DIAMOND_BLOCK)
             map->SetTile(x, y, Tile::AIR);
         return;
     }

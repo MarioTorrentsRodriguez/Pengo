@@ -15,12 +15,12 @@ int layouts[2][15][15] = {
 	{2,0,1,0,0,0,1,0,0,0,1,0,1,0,13},
 	{2,0,1,0,1,0,1,0,1,0,1,0,1,0,13},
 	{2,0,0,0,1,0,0,0,1,0,0,0,1,0,13},
-	{2,1,1,0,3,1,1,0,1,1,1,0,1,0,13},
+	{2,1,1,0,3,1,1,0,1,1,1,0,3,0,13},
 	{2,0,0,0,0,0,1,0,0,0,1,0,0,0,13},
 	{2,0,1,1,1,0,1,0,1,0,1,1,1,0,13},
 	{2,0,1,0,0,0,0,0,1,0,0,0,1,0,13},
 	{2,0,1,0,1,1,1,0,1,1,1,0,1,0,13},
-	{2,0,0,0,1,0,0,0,0,0,1,0,0,0,13},
+	{2,0,0,0,1,0,0,0,0,0,3,0,0,0,13},
 	{2,1,1,0,1,0,1,1,1,0,1,0,1,1,13},
 	{2,0,0,0,1,0,0,0,1,1,1,0,1,0,13},
 	{2,0,1,0,0,0,1,0,0,0,0,0,0,0,13},
@@ -234,7 +234,7 @@ void Scene::Update()
 
 		if (level && level->IsValidCell(tileX, tileY))
 		{
-			level->SetTile(tileX, tileY, Tile::AIR); // reemplaza por aire (0)
+			level->SetTile(tileX, tileY, Tile::DIAMOND_BLOCK); // bloque diamante (3)
 		}
 	}
 	if (IsKeyPressed(KEY_F4))
@@ -252,6 +252,21 @@ void Scene::Update()
 			Point spawnPos = { tileX * TILE_SIZE, tileY * TILE_SIZE };
 			AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
 			enemies->Add(spawnPos, EnemyType::GLORP, area);
+		}
+	}
+	if (IsKeyPressed(KEY_F5))
+	{
+		Vector2 mouse = GetMousePosition();
+		mouse.x /= 2.0f;
+		mouse.y /= 2.0f;
+
+		Vector2 worldPos = GetScreenToWorld2D(mouse, camera);
+		int tileX = (int)(worldPos.x / TILE_SIZE);
+		int tileY = (int)(worldPos.y / TILE_SIZE);
+
+		if (level && level->IsValidCell(tileX, tileY))
+		{
+			level->SetTile(tileX, tileY, Tile::AIR); // reemplaza por aire (0)
 		}
 	}
 	if (IsKeyPressed(KEY_ONE)) {
@@ -284,14 +299,14 @@ void Scene::Update()
 	}
 
 	// Cambio a nivel 2 si alcanza 100 puntos
-	if (player->GetScore() >= 100 && current_stage == 1)
+	if (player->GetScore() >= 20000 && current_stage == 1)
 	{
 		LoadLevel(2);
 		current_stage = 2;
 	}
 
 	// Victoria si alcanza 200 puntos
-	if (player->GetScore() >= 200)
+	if (player->GetScore() >= 50000)
 	{
 		g_game->FinishPlay();
 		g_game->ChangeState(GameState::WIN_SCREEN);
@@ -311,7 +326,37 @@ void Scene::Update()
 
 		enemies->PushEnemiesByBlock(blockBox, dir, block.GetSpeed()); // Movimiento sincronizado
 	}
+	// 🔍 Buscar tríos de diamantes y eliminarlos
+	for (int y = 0; y < LEVEL_HEIGHT; ++y)
+	{
+		for (int x = 0; x < LEVEL_WIDTH; ++x)
+		{
+			if (level->GetTileIndex(x, y) == Tile::DIAMOND_BLOCK)
+			{
+				// Horizontal
+				if (x <= LEVEL_WIDTH - 3 &&
+					level->GetTileIndex(x + 1, y) == Tile::DIAMOND_BLOCK &&
+					level->GetTileIndex(x + 2, y) == Tile::DIAMOND_BLOCK)
+				{
+					level->SetTile(x, y, Tile::AIR);
+					level->SetTile(x + 1, y, Tile::AIR);
+					level->SetTile(x + 2, y, Tile::AIR);
+					player->IncrScore(10000);
+				}
 
+				// Vertical
+				if (y <= LEVEL_HEIGHT - 3 &&
+					level->GetTileIndex(x, y + 1) == Tile::DIAMOND_BLOCK &&
+					level->GetTileIndex(x, y + 2) == Tile::DIAMOND_BLOCK)
+				{
+					level->SetTile(x, y, Tile::AIR);
+					level->SetTile(x, y + 1, Tile::AIR);
+					level->SetTile(x, y + 2, Tile::AIR);
+					player->IncrScore(10000);
+				}
+			}
+		}
+	}
 	// Eliminar bloques terminados y liberar enemigos arrastrados
 	moving_blocks.erase(std::remove_if(moving_blocks.begin(), moving_blocks.end(),
 		[&](const MovingBlock& b) {
@@ -343,7 +388,8 @@ void Scene::Update()
 						// Si está atrapado entre dos lados o aplastado contra el suelo
 						if ((leftSolid && rightSolid) || groundSolid)
 						{
-							enemy->SetAlive(false);  // ✅ Enemigo aplastado
+							enemy->SetAlive(false);              // ✅ Marcar como muerto
+							player->IncrScore(500);              // 🏆 Añadir 500 puntos
 						}
 					}
 				}
