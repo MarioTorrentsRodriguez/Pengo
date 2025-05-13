@@ -3,6 +3,8 @@
 #include "Game.h" // necesario para acceder a g_game y GameState
 #include <cstdlib>
 #include <ctime>
+#include <raylib.h>
+
 
 extern Game* g_game; // para acceder a la instancia global del juego
 int layouts[2][15][15] = {
@@ -28,7 +30,7 @@ int layouts[2][15][15] = {
 	// Nivel 2
 	{
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-	{6,11,11,11,11,11,11,11,11,11,11,11,11,11,9},
+	{6,7,7,7,7,7,7,7,7,7,7,7,7,7,9},
 	{5,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
 	{5,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
 	{5,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
@@ -41,7 +43,7 @@ int layouts[2][15][15] = {
 	{5,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
 	{5,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
 	{5,0,0,0,0,0,0,0,0,0,0,0,0,0,2},
-	{16,7,7,7,7,7,7,7,7,7,7,7,7,7,15}
+	{15,16,16,16,16,16,16,16,16,16,16,16,16,16,11},
 	},
 };
 Scene::Scene()
@@ -205,6 +207,17 @@ void Scene::Update()
 	if (IsKeyPressed(KEY_F1))
 		debug = (DebugMode)(((int)debug + 1) % (int)DebugMode::SIZE);
 
+	if (IsKeyPressed(KEY_F2))
+	{
+		Vector2 worldPos = GetScreenToWorld2D(GetMousePosition(), camera);
+		int tileX = (int)(worldPos.x / TILE_SIZE);
+		int tileY = (int)(worldPos.y / TILE_SIZE);
+
+		if (level && level->IsValidCell(tileX, tileY))
+{
+    level->SetTile(tileX, tileY, static_cast<Tile>(1)); // bloque azul
+}
+	}
 	if (IsKeyPressed(KEY_ONE)) {
 		LoadLevel(1);
 		current_stage = 1;
@@ -333,6 +346,13 @@ void Scene::Render()
 		shots->Draw();
 	}
 
+	if (debug != DebugMode::OFF)
+	{
+		Vector2 mouse = GetScreenToWorld2D(GetMousePosition(), camera);
+		int tx = ((int)(mouse.x) / TILE_SIZE) * TILE_SIZE;
+		int ty = ((int)(mouse.y) / TILE_SIZE) * TILE_SIZE;
+		DrawRectangleLines(tx, ty, TILE_SIZE, TILE_SIZE, BLUE);
+	}
 	if (debug == DebugMode::SPRITES_AND_HITBOXES || debug == DebugMode::ONLY_HITBOXES)
 	{
 		player->DrawDebug(GREEN);

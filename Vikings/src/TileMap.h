@@ -96,7 +96,16 @@ private:
 	bool CollisionX(const Point& p, int distance) const;
 	bool CollisionY(const Point& p, int distance) const;
 	int GetLadderCenterPos(int pixel_x, int pixel_y) const;
-
+	inline bool IsStaticBlock(Tile t)
+	{
+		return t == Tile::BLOCK_SQUARE1_TR ||
+			t == Tile::BLOCK_SQUARE1_BL ||
+			t == Tile::BLOCK_SQUARE2_TL ||
+			t == Tile::BLOCK_SQUARE2_TR ||
+			t == Tile::BLOCK_SQUARE2_BL ||
+			t == Tile::BLOCK_SQUARE2_BR ||
+			t == Tile::BLOCK_VERT2_B;
+	}
 	Tile* map;
 	int size, width, height;
 	std::unordered_map<int, Rectangle> dict_rect;

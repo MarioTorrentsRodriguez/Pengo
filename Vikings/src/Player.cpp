@@ -6,6 +6,20 @@
 #include "MovingBlock.h"
 #include "Scene.h"
 
+inline bool IsStaticBlock(Tile tile)
+{
+    return tile == Tile::BLOCK_SQUARE1_TR || // 2
+        tile == Tile::BLOCK_SQUARE1_BL || // 3
+        tile == Tile::BLOCK_SQUARE2_TL || // 5
+        tile == Tile::BLOCK_SQUARE2_TR || // 6
+        tile == Tile::BLOCK_SQUARE2_BL || // 7
+        tile == Tile::BLOCK_SQUARE2_BR || // 8
+        tile == Tile::BLOCK_VERT2_B || // 10
+        tile == Tile::BLOCK_BLUE || // 13
+        tile == Tile::BLOCK_HORIZ3_R;      // 16
+}
+
+
 Player::Player(const Point& p, State s, Look view) :
     Entity(p, PLAYER_PHYSICAL_WIDTH, PLAYER_PHYSICAL_HEIGHT, PLAYER_FRAME_SIZE, PLAYER_FRAME_SIZE)
 {
@@ -290,6 +304,7 @@ void Player::TryPushTile()
     if (!map->IsValidCell(x, y)) return;
     Tile tile = map->GetTileIndex(x, y);
     if (!map->IsTileSolid(tile)) return;
+    if (IsStaticBlock(tile)) return;
 
     int nx = x + dx;
     int ny = y + dy;
@@ -297,7 +312,8 @@ void Player::TryPushTile()
     // Si está bloqueado inmediatamente, romper el bloque
     if (!map->IsValidCell(nx, ny) || map->GetTileIndex(nx, ny) != Tile::AIR)
     {
-        map->SetTile(x, y, Tile::AIR);  // Elimina el bloque en su sitio
+        if (!IsStaticBlock(tile))  // ✅ Solo se puede destruir si no es estático
+            map->SetTile(x, y, Tile::AIR);
         return;
     }
 
