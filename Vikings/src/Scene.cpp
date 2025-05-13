@@ -5,7 +5,7 @@
 #include <ctime>
 #include <raylib.h>
 #include <vector>
-
+#include "EnemyGlorp.h"
 extern Game* g_game; // para acceder a la instancia global del juego
 int layouts[2][15][15] = {
 	// Nivel 1
@@ -414,6 +414,33 @@ void Scene::Update()
 			Tile current = level->GetTileIndex(it->tile_pos.x, it->tile_pos.y);
 			Tile next = (current == it->original) ? it->alternate : it->original;
 			level->SetTile(it->tile_pos.x, it->tile_pos.y, next);
+
+			// Detectar enemigos adyacentes y aplicar stun solo si son EnemyGlorp
+			for (auto& enemy : enemies->GetEnemies())
+			{
+				if (!enemy->IsAlive()) continue;
+
+				AABB ebox = enemy->GetHitbox();
+				int ex = (ebox.pos.x + ebox.width / 2) / TILE_SIZE;
+				int ey = (ebox.pos.y + ebox.height / 2) / TILE_SIZE;
+
+				int tx = it->tile_pos.x;
+				int ty = it->tile_pos.y;
+
+				bool adjacent =
+					(ex == tx && (ey == ty - 1 || ey == ty + 1)) ||
+					(ey == ty && (ex == tx - 1 || ex == tx + 1));
+
+				if (adjacent)
+				{
+					// ✅ Solo stunea si es un EnemyGlorp
+					EnemyGlorp* glorp = dynamic_cast<EnemyGlorp*>(enemy);
+					if (glorp != nullptr)
+					{
+						glorp->Stun(5.0f);
+					}
+				}
+			}
 
 			--it->remaining_blinks;
 			if (it->remaining_blinks <= 0)

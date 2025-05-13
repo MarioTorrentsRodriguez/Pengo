@@ -19,7 +19,8 @@ class EnemyGlorp : public Enemy
 public:
     EnemyGlorp(TileMap* tilemap);
     ~EnemyGlorp();
-
+    void Stun(float seconds);
+    bool IsStunned() const;
     // Inicializa su orientación y área de visión
     AppStatus Initialise(Look look, const AABB& area) override;
 
@@ -31,7 +32,8 @@ public:
 private:
     // Decide una nueva dirección aleatoria
     void ChooseRandomDirection();
-
+    bool stunned = false;
+    float stun_timer = 0.0f;
     TileMap* map;       // Referencia al mapa de tiles
     int frame_counter;  // Contador para cambiar de dirección
 };

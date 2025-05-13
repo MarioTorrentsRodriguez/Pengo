@@ -47,7 +47,14 @@ EnemyGlorp::~EnemyGlorp()
 {
     // Recursos liberados en Entity::~Entity()
 }
+void EnemyGlorp::Stun(float seconds) {
+    stunned = true;
+    stun_timer = seconds;
+}
 
+bool EnemyGlorp::IsStunned() const {
+    return stunned;
+}
 AppStatus EnemyGlorp::Initialise(Look look_dir, const AABB& area)
 {
     look = look_dir;
@@ -58,6 +65,14 @@ AppStatus EnemyGlorp::Initialise(Look look_dir, const AABB& area)
 
 bool EnemyGlorp::Update(const AABB& player_hitbox)
 {
+    if (stunned) {
+        stun_timer -= GetFrameTime();
+        if (stun_timer <= 0.0f) {
+            stunned = false;
+            stun_timer = 0.0f;
+        }
+        return false;  // No se mueve ni dispara
+    }
     frame_counter++;
 
     Point old_pos = pos;
