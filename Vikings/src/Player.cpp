@@ -79,6 +79,7 @@ void Player::Update()
     HandleMovement();
 
     Sprite* sprite = dynamic_cast<Sprite*>(render);
+    sprite->Update();
     if (sprite != nullptr)
         sprite->Update();
 
