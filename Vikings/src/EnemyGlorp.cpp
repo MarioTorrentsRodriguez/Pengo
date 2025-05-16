@@ -84,6 +84,44 @@ bool EnemyGlorp::Update(const AABB& player_hitbox)
 
     TryBreakBlock(player_hitbox);
 
+    if (IsVisible(player_hitbox))
+    {
+        Point center_enemy = { pos.x + width / 2, pos.y + height / 2 };
+        Point center_player = { player_hitbox.pos.x + player_hitbox.width / 2,
+                                player_hitbox.pos.y + player_hitbox.height / 2 };
+
+        Point diff = center_player - center_enemy;
+
+        if (abs(diff.x) > abs(diff.y))
+        {
+            // Prioriza movimiento horizontal
+            dir.x = (diff.x > 0) ? GLORP_SPEED : -GLORP_SPEED;
+            dir.y = 0;
+            look = (diff.x > 0) ? Look::RIGHT : Look::LEFT;
+        }
+        else
+        {
+            // Prioriza movimiento vertical
+            dir.y = (diff.y > 0) ? GLORP_SPEED : -GLORP_SPEED;
+            dir.x = 0;
+            look = (diff.y > 0) ? Look::DOWN : Look::UP;
+        }
+
+        // Actualiza animación según la dirección
+        Sprite* sprite = dynamic_cast<Sprite*>(render);
+        if (sprite)
+        {
+            switch (look)
+            {
+            case Look::LEFT:  sprite->SetAnimation(1); break;
+            case Look::RIGHT: sprite->SetAnimation(3); break;
+            case Look::UP:    sprite->SetAnimation(2); break;
+            case Look::DOWN:  sprite->SetAnimation(0); break;
+            }
+        }
+    }
+
+
     Point old_pos = pos;
     Point next_pos = pos + dir;
     AABB new_box = GetHitbox();
@@ -92,12 +130,21 @@ bool EnemyGlorp::Update(const AABB& player_hitbox)
     if (map->TestCollisionAllSides(new_box))
     {
         pos = old_pos;
-        ChooseRandomDirection();
+        ChooseRandomDirection(); // Ya estaba
     }
     else
     {
-        pos = next_pos;
+        // Si no han avanzado, cambia dirección (evita quedarse atascado)
+        if (pos == next_pos)
+        {
+            ChooseRandomDirection();
+        }
+        else
+        {
+            pos = next_pos;
+        }
     }
+
 
     // Avanza la animación
     Sprite* sprite = dynamic_cast<Sprite*>(render);
@@ -189,7 +236,7 @@ void EnemyGlorp::TryBreakBlock(const AABB& player_hitbox)
         Stop();
         dir = { 0, 0 };
 
-        TraceLog(LOG_INFO, "✅ Glorp va a romper bloque en (%d, %d)", forwardTile.x, forwardTile.y);
+        TraceLog(LOG_INFO, "Glorp va a romper bloque en (%d, %d)", forwardTile.x, forwardTile.y);
     }
 }
 
