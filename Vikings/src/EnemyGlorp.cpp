@@ -1,6 +1,8 @@
 ﻿#include "EnemyGlorp.h"
 #include "ResourceManager.h"
 #include "Sprite.h"
+#include "Player.h"  // Si necesitas información del jugador en el futuro
+#include "Globals.h"
 
 EnemyGlorp::EnemyGlorp(TileMap* tilemap)
     : Enemy({ 0, 0 }, GLORP_PHYSICAL_WIDTH, GLORP_PHYSICAL_HEIGHT, GLORP_FRAME_SIZE, GLORP_FRAME_SIZE)
@@ -74,6 +76,13 @@ bool EnemyGlorp::Update(const AABB& player_hitbox)
         return false;  // No se mueve ni dispara
     }
     frame_counter++;
+
+    if (breaking_block) {
+        UpdateBreaking();
+        return true;
+    }
+
+    TryBreakBlock(player_hitbox);
 
     Point old_pos = pos;
     Point next_pos = pos + dir;
@@ -156,3 +165,49 @@ void EnemyGlorp::ChooseRandomDirection()
     }
 }
 
+void EnemyGlorp::TryBreakBlock(const AABB& player_hitbox)
+{
+    Point myTile = { pos.x / TILE_SIZE, pos.y / TILE_SIZE };
+    Point forwardTile = myTile;
+
+    switch (look)
+    {
+    case Look::UP:    forwardTile.y -= 1; break;
+    case Look::DOWN:  forwardTile.y += 1; break;
+    case Look::LEFT:  forwardTile.x -= 1; break;
+    case Look::RIGHT: forwardTile.x += 1; break;
+    }
+
+    Tile tile = map->GetTileIndex(forwardTile.x, forwardTile.y);
+
+    // Si hay un bloque de hielo delante, rompelo
+    if (tile == Tile::BLOCK_SQUARE1_TL)
+    {
+        breaking_block = true;
+        break_timer = 1.0f;
+        target_tile = forwardTile;
+        Stop();
+        dir = { 0, 0 };
+
+        TraceLog(LOG_INFO, "✅ Glorp va a romper bloque en (%d, %d)", forwardTile.x, forwardTile.y);
+    }
+}
+
+void EnemyGlorp::UpdateBreaking()
+{
+    break_timer -= GetFrameTime();
+
+    if (break_timer <= 0.0f)
+    {
+        Tile current = map->GetTileIndex(target_tile.x, target_tile.y);
+
+        if (current == Tile::BLOCK_SQUARE1_TL)
+        {
+            map->SetTile(target_tile.x, target_tile.y, Tile::AIR);
+            TraceLog(LOG_INFO, "Glorp rompió bloque en (%d, %d)", target_tile.x, target_tile.y);
+        }
+
+        breaking_block = false;
+        ChooseRandomDirection(); // continuar moviéndose
+    }
+}
