@@ -10,7 +10,6 @@
 
 enum class DebugMode { OFF, SPRITES_AND_HITBOXES, ONLY_HITBOXES, SIZE };
 
-// ✅ DEFINICIÓN REQUERIDA ANTES DE USO
 struct TileBlink {
     Point tile_pos;
     Tile original;
@@ -25,6 +24,7 @@ class Scene
 public:
     Scene();
     ~Scene();
+
     std::vector<TileBlink> tile_blinks;
 
     AppStatus Init();
@@ -32,15 +32,17 @@ public:
     void Render();
     void Release();
     void AddMovingBlock(const MovingBlock& block);
+
 private:
+    // Retraso de aparición de enemigos
+    double spawnDelayStartTime = 0.0;
+    bool enemiesSpawned = false;
+
     AppStatus LoadLevel(int stage);
     std::vector<MovingBlock> moving_blocks;
-    void CheckObjectCollisions();
-    void ClearLevel();
-    void RenderObjects() const;
-    void RenderObjectsDebug(const Color& col) const;
     int current_stage = 1;
     void RenderGUI() const;
+
     TileMap* tilemap;
     Player* player;
     bool pending_restart = false;
@@ -48,10 +50,11 @@ private:
     Point GetRandomFreePositionFromLayout(const int layout[15][15]);
     std::vector<Object*> objects;
     EnemyManager* enemies;
-    EnemyManager enemyManager;
     ShotManager* shots;
     Camera2D camera;
-    Sound level1Song = LoadSound("audio/level1Song.mp3");
-    Sound level2Song = LoadSound("audio/level2Song.mp3");
+
+    /*Sound level1Song = LoadSound("audio/level1Song.mp3");
+    Sound level2Song = LoadSound("audio/level2Song.mp3");*/
+
     DebugMode debug;
 };
