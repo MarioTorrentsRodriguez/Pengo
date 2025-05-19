@@ -13,19 +13,21 @@ Enemy::~Enemy()
 }
 bool Enemy::IsVisible(const AABB& hitbox)
 {
-    int ex = pos.x / TILE_SIZE;
-    int ey = pos.y / TILE_SIZE;
-
-    int px = hitbox.pos.x / TILE_SIZE;
-    int py = hitbox.pos.y / TILE_SIZE;
-
-    if (ex == px || ey == py) // misma fila o columna
-    {
-        // opción: incluso puedes lanzar un raycast para ver si hay aire entre ellos
-        return true;
-    }
-
-    return false;
+	//Does the enemy's visibility area intersect with the hitbox?
+	if (visibility_area.Intersects(hitbox))
+	{
+		//Is the enemy facing the hitbox?
+		//We consider it not visible when the boxes are colliding
+		if (look == Look::LEFT)
+		{
+			if(pos.x > hitbox.pos.x + hitbox.width)	return true;
+		}
+		else if (look == Look::RIGHT)
+		{
+			if(pos.x + width < hitbox.pos.x)	return true;
+		}
+	}
+	return false;
 }
 void Enemy::DrawVisibilityArea(const Color& col) const
 {

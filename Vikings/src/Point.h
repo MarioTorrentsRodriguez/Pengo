@@ -64,13 +64,8 @@ public:
         //Handle division by zero gracefully (no change)
         return *this;
     }
-    
     bool operator!=(const Point& p) const {
         return (x != p.x) || (y != p.y);
-    }
-    
-    bool operator==(const Point& p) const {
-        return (x == p.x) && (y == p.y);
     }
 
     //Distance method
