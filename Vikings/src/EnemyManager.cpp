@@ -101,7 +101,6 @@ void EnemyManager::Update(Player* player)
             {
                 Point p, d;
                 enemy->GetShootingPosDir(&p, &d);
-                shots->Add(p, d);
             }
         }
     }
