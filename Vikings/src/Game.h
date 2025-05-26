@@ -2,16 +2,17 @@
 #include "Globals.h"
 #include "Scene.h"
 #include <vector>
-enum class GameState { 
-    
+
+enum class GameState {
     CONTROLS_SCREEN,
-    INITIAL_SCREEN, 
-    MAIN_MENU, 
+    INITIAL_SCREEN,
+    MAIN_MENU,
     PLAYING,
     WIN_SCREEN,
     LOSE_SCREEN,
-    SETTINGS, 
-    CREDITS };
+    SETTINGS,
+    CREDITS
+};
 
 class Scene;
 
@@ -28,31 +29,30 @@ public:
     void ChangeState(GameState new_state) { state = new_state; }
     void FinishPlay();
     GameState state;
-    Sound enemyDeathSound;
+
+    //  Sonidos accesibles públicamente
+    Sound menuSong = { 0 };
+    Sound level1Song = { 0 };
+    Sound level2Song = { 0 };
+    Sound missSound = { 0 };
+    Sound winSound = { 0 };
+    Sound enemyDeathSound = { 0 };
+    Sound enemySpawnSound = { 0 };
+    Sound enemyStunSound = { 0 };
 
 private:
     AppStatus BeginPlay();
-
     AppStatus LoadResources();
     void UnloadResources();
 
-    Scene *scene;
-    const Texture2D *img_menu;
+    Scene* scene;
+    const Texture2D* img_menu;
     const Texture2D* img_initial;
     const Texture2D* img_win;
     const Texture2D* img_lose;
     const Texture2D* img_controls;
 
-    // Declaraciones de sonido (se inicializan en LoadResources)
-    Sound menuSong;
-    Sound level1Song;
-    Sound level2Song;
-    Sound missSound;
-    Sound winSound;
-    Sound enemySpawnSound;
-
-
-    //To work with original game units and then scale the result
+    //  Renderización con escala
     RenderTexture2D target;
     Rectangle src, dst;
 };

@@ -102,6 +102,8 @@ AppStatus Game::LoadResources()
     SetSoundVolume(enemyDeathSound, 1.0f);
     enemySpawnSound = LoadSound("audio/Snow-Bee Spawning.mp3");
     SetSoundVolume(enemySpawnSound, 1.0f);
+    enemyStunSound = LoadSound("audio/Snow-Bee Stunned.mp3");
+    SetSoundVolume(enemyStunSound, 1.0f);
 
 
 
@@ -254,7 +256,8 @@ void Game::Cleanup()
     UnloadSound(winSound);
     UnloadSound(enemyDeathSound);
     UnloadSound(enemySpawnSound);
-
+    UnloadSound(enemyStunSound);
+    
     CloseAudioDevice();
     CloseWindow();
 }

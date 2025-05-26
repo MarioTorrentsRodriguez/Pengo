@@ -19,11 +19,11 @@ public:
     void DrawDebug() const;
     void Release();
 
-    // ✅ Nueva función para empujar enemigos sincronizados con el bloque
+    //  Nueva función para empujar enemigos sincronizados con el bloque
     void PushEnemiesByBlock(const AABB& blockBox, const Point& direction, float speed);
     void SetBeingPushed(bool value) { being_pushed = value; }
     bool IsBeingPushed() const { return being_pushed; }
-    // ✅ Getter para acceder a la lista de enemigos desde Scene
+    //  Getter para acceder a la lista de enemigos desde Scene
     std::vector<Enemy*>& GetEnemies() { return enemies; }
     // Añadir este método
     bool HasLiveEnemies() const {

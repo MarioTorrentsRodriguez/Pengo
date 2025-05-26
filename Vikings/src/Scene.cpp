@@ -660,7 +660,14 @@ void Scene::Update()
                     if (glorp != nullptr)
                     {
                         glorp->Stun(5.0f);
+
+                        // 🔊 Reproducir sonido de aturdimiento
+                        if (g_game != nullptr)
+                        {
+                            PlaySound(g_game->enemyStunSound);
+                        }
                     }
+
                 }
             }
 
