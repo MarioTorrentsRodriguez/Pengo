@@ -29,7 +29,7 @@ public:
 	bool IsAlive() const;
 
 	//Draw representation model
-	void Draw() const;
+	virtual void Draw() const;
 	void DrawTint(const Color& col) const;
 	
 	//Draw logical/physical model (hitbox)

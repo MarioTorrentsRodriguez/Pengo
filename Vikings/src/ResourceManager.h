@@ -15,7 +15,8 @@ enum class Resource {
     IMG_ENEMIES,
     IMG_GLORP,
     IMG_WIN,
-    IMG_LOSE
+    IMG_LOSE,
+    IMG_BREAK_ANIM,
 };
 
 class ResourceManager {

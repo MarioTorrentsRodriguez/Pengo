@@ -87,6 +87,10 @@ AppStatus Game::LoadResources()
         return AppStatus::ERROR;
     img_lose = data.GetTexture(Resource::IMG_LOSE);
 
+    if (data.LoadTexture(Resource::IMG_BREAK_ANIM, "images/animacionromperbloques.png") != AppStatus::OK)
+        return AppStatus::ERROR;
+
+
     //Sound menuSong = LoadSound("audio/mainMenu.mp3");
     //Sound level1Song = LoadSound("audio/level1Song.mp3");
     //Sound level2Song = LoadSound("audio/level2Song.mp3");

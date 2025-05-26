@@ -1,7 +1,7 @@
 ﻿#include "EnemyGlorp.h"
 #include "ResourceManager.h"
 #include "Sprite.h"
-#include "Player.h"  // Si necesitas información del jugador en el futuro
+#include "Player.h"
 #include "Globals.h"
 
 EnemyGlorp::EnemyGlorp(TileMap* tilemap)
@@ -14,41 +14,33 @@ EnemyGlorp::EnemyGlorp(TileMap* tilemap)
     data.LoadTexture(Resource::IMG_GLORP, "images/Enemy.png");
 
     Sprite* sprite = new Sprite(data.GetTexture(Resource::IMG_GLORP));
-    sprite->SetNumberAnimations(4); // DOWN, LEFT, UP, RIGHT
-    sprite->SetAnimationDelay(0, ANIM_DELAY * 2); // Más lento
+    sprite->SetNumberAnimations(4);
+    sprite->SetAnimationDelay(0, ANIM_DELAY * 2);
     sprite->SetAnimationDelay(1, ANIM_DELAY * 2);
     sprite->SetAnimationDelay(2, ANIM_DELAY * 2);
     sprite->SetAnimationDelay(3, ANIM_DELAY * 2);
 
-
-    const int n = 16; // GLORP_FRAME_SIZE
-
-    // DOWN (fila 0)
+    const int n = 16;
     sprite->AddKeyFrame(0, { 0 * n, 0, n, n });
     sprite->AddKeyFrame(0, { 1 * n, 0, n, n });
-
-    // LEFT (frames 2,3)
     sprite->AddKeyFrame(1, { 2 * n, 0, n, n });
     sprite->AddKeyFrame(1, { 3 * n, 0, n, n });
-
-    // UP (frames 4,5)
     sprite->AddKeyFrame(2, { 4 * n, 0, n, n });
     sprite->AddKeyFrame(2, { 5 * n, 0, n, n });
-
-    // RIGHT (frames 6,7)
     sprite->AddKeyFrame(3, { 6 * n, 0, n, n });
     sprite->AddKeyFrame(3, { 7 * n, 0, n, n });
 
     sprite->SetAnimation(0);
     sprite->SetAutomaticMode();
-
     render = sprite;
+
+    break_anim_texture = ResourceManager::Instance().GetTexture(Resource::IMG_BREAK_ANIM);
+    if (!break_anim_texture || break_anim_texture->id == 0)
+        TraceLog(LOG_ERROR, "Textura de animación no cargada correctamente");
 }
 
-EnemyGlorp::~EnemyGlorp()
-{
-    // Recursos liberados en Entity::~Entity()
-}
+EnemyGlorp::~EnemyGlorp() {}
+
 void EnemyGlorp::Stun(float seconds) {
     stunned = true;
     stun_timer = seconds;
@@ -57,6 +49,7 @@ void EnemyGlorp::Stun(float seconds) {
 bool EnemyGlorp::IsStunned() const {
     return stunned;
 }
+
 AppStatus EnemyGlorp::Initialise(Look look_dir, const AABB& area)
 {
     look = look_dir;
@@ -73,12 +66,14 @@ bool EnemyGlorp::Update(const AABB& player_hitbox)
             stunned = false;
             stun_timer = 0.0f;
         }
-        return false;  // No se mueve ni dispara
+        return false;
     }
+
     frame_counter++;
 
     if (breaking_block) {
         UpdateBreaking();
+        UpdateBreakAnims();
         return true;
     }
 
@@ -99,17 +94,42 @@ bool EnemyGlorp::Update(const AABB& player_hitbox)
         pos = next_pos;
     }
 
-    // Avanza la animación
     Sprite* sprite = dynamic_cast<Sprite*>(render);
     if (sprite) sprite->Update();
 
+    UpdateBreakAnims();
+
     return false;
+}
+
+void EnemyGlorp::UpdateBreakAnims()
+{
+    float delta = GetFrameTime();
+    for (auto& anim : break_anims)
+        anim.Update(delta);
+
+    break_anims.erase(
+        std::remove_if(break_anims.begin(), break_anims.end(),
+            [](const BreakAnimation& a) { return a.IsFinished(); }),
+        break_anims.end());
+}
+
+void EnemyGlorp::Draw() const
+{
+    Entity::Draw();
+    TraceLog(LOG_INFO, "Draw EnemyGlorp ejecutado: anims activos = %d", (int)break_anims.size());
+    for (const auto& anim : break_anims)
+    {
+        TraceLog(LOG_INFO, "Dibujando animación en (%f, %f)", anim.position.x, anim.position.y);
+        DrawRectangle(anim.position.x, anim.position.y, 16, 16, RED); // cuadrado rojo de debug
+        anim.Draw();
+    }
 }
 
 void EnemyGlorp::GetShootingPosDir(Point* pos_out, Point* dir_out) const
 {
     *pos_out = pos;
-    *dir_out = { 0, 0 }; // Glorp no dispara
+    *dir_out = { 0, 0 };
 }
 
 void EnemyGlorp::ChooseRandomDirection()
@@ -122,45 +142,22 @@ void EnemyGlorp::ChooseRandomDirection()
     case 0:
         dir = { -GLORP_SPEED, 0 };
         look = Look::LEFT;
-        if (sprite)
-        {
-            sprite->SetAnimation(1); // LEFT
-            sprite->SetAutomaticMode();
-            sprite->SetFrame(0);
-        }
+        if (sprite) { sprite->SetAnimation(1); sprite->SetAutomaticMode(); sprite->SetFrame(0); }
         break;
-
     case 1:
         dir = { GLORP_SPEED, 0 };
         look = Look::RIGHT;
-        if (sprite)
-        {
-            sprite->SetAnimation(3); // RIGHT
-            sprite->SetAutomaticMode();
-            sprite->SetFrame(0);
-        }
+        if (sprite) { sprite->SetAnimation(3); sprite->SetAutomaticMode(); sprite->SetFrame(0); }
         break;
-
     case 2:
         dir = { 0, -GLORP_SPEED };
         look = Look::UP;
-        if (sprite)
-        {
-            sprite->SetAnimation(2); // UP
-            sprite->SetAutomaticMode();
-            sprite->SetFrame(0);
-        }
+        if (sprite) { sprite->SetAnimation(2); sprite->SetAutomaticMode(); sprite->SetFrame(0); }
         break;
-
     case 3:
         dir = { 0, GLORP_SPEED };
         look = Look::DOWN;
-        if (sprite)
-        {
-            sprite->SetAnimation(0); // DOWN
-            sprite->SetAutomaticMode();
-            sprite->SetFrame(0);
-        }
+        if (sprite) { sprite->SetAnimation(0); sprite->SetAutomaticMode(); sprite->SetFrame(0); }
         break;
     }
 }
@@ -180,7 +177,6 @@ void EnemyGlorp::TryBreakBlock(const AABB& player_hitbox)
 
     Tile tile = map->GetTileIndex(forwardTile.x, forwardTile.y);
 
-    // Si hay un bloque de hielo delante, rompelo
     if (tile == Tile::BLOCK_SQUARE1_TL)
     {
         breaking_block = true;
@@ -188,8 +184,7 @@ void EnemyGlorp::TryBreakBlock(const AABB& player_hitbox)
         target_tile = forwardTile;
         Stop();
         dir = { 0, 0 };
-
-        TraceLog(LOG_INFO, "✅ Glorp va a romper bloque en (%d, %d)", forwardTile.x, forwardTile.y);
+        TraceLog(LOG_INFO, "Glorp va a romper bloque en (%d, %d)", forwardTile.x, forwardTile.y);
     }
 }
 
@@ -200,14 +195,22 @@ void EnemyGlorp::UpdateBreaking()
     if (break_timer <= 0.0f)
     {
         Tile current = map->GetTileIndex(target_tile.x, target_tile.y);
+        TraceLog(LOG_INFO, "UpdateBreaking ejecutándose: tile actual = %d", (int)current);
 
         if (current == Tile::BLOCK_SQUARE1_TL)
         {
             map->SetTile(target_tile.x, target_tile.y, Tile::AIR);
             TraceLog(LOG_INFO, "Glorp rompió bloque en (%d, %d)", target_tile.x, target_tile.y);
+
+            Vector2 animPos = {
+                (float)(target_tile.x * TILE_SIZE),
+                (float)(target_tile.y * TILE_SIZE)
+            };
+            break_anims.emplace_back(animPos, break_anim_texture);
+            TraceLog(LOG_INFO, "Animación creada en (%f, %f)", animPos.x, animPos.y);
         }
 
         breaking_block = false;
-        ChooseRandomDirection(); // continuar moviéndose
+        ChooseRandomDirection();
     }
 }

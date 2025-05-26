@@ -292,7 +292,7 @@ void Scene::Update()
     level->Update();
     player->Update();
 
-    // ✅ Solo actualiza enemigos si ya se han activado
+    // Solo actualiza enemigos si ya se han activado
     if (enemiesSpawned) {
         enemies->Update(player);
     }
@@ -343,7 +343,7 @@ void Scene::Update()
         enemies->PushEnemiesByBlock(blockBox, dir, block.GetSpeed()); // Movimiento sincronizado
     }
 
-    // 🔍 Buscar tríos de diamantes y eliminarlos
+    //  Buscar tríos de diamantes y eliminarlos
     for (int y = 0; y < LEVEL_HEIGHT; ++y)
     {
         for (int x = 0; x < LEVEL_WIDTH; ++x)
@@ -464,8 +464,6 @@ void Scene::Update()
         ++it;
     }
 }
-
-
 
 void Scene::Render()
 {
