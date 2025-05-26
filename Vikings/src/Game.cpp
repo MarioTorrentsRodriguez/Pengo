@@ -30,6 +30,8 @@ Game::~Game()
 }
 AppStatus Game::Initialise(float scale)
 {
+    InitAudioDevice();
+
     float w, h;
     w = WINDOW_WIDTH * scale;
     h = WINDOW_HEIGHT * scale;
@@ -59,7 +61,7 @@ AppStatus Game::Initialise(float scale)
     SetTargetFPS(60);
     //Disable the escape key to quit functionality
     SetExitKey(0);
-    InitAudioDevice();
+    
 
     return AppStatus::OK;
 }
@@ -90,11 +92,13 @@ AppStatus Game::LoadResources()
     if (data.LoadTexture(Resource::IMG_BREAK_ANIM, "images/animacionromperbloques.png") != AppStatus::OK)
         return AppStatus::ERROR;
 
+    // Cargar sonidos
+    menuSong = LoadSound("audio/mainMenu.mp3");
+    level1Song = LoadSound("audio/level1Song.mp3");
+    level2Song = LoadSound("audio/level2Song.mp3");
 
-    //Sound menuSong = LoadSound("audio/mainMenu.mp3");
-    //Sound level1Song = LoadSound("audio/level1Song.mp3");
-    //Sound level2Song = LoadSound("audio/level2Song.mp3");
-    //PlaySound(menuSong);
+    // Reproducir canción del menú
+    PlaySound(menuSong);
 
     return AppStatus::OK;
 }
@@ -142,6 +146,7 @@ AppStatus Game::Update()
         {
             StopSound(menuSong);
             if (BeginPlay() != AppStatus::OK) return AppStatus::ERROR;
+            PlaySound(level1Song); // Música del nivel
             state = GameState::PLAYING;
         }
         break;
@@ -149,7 +154,9 @@ AppStatus Game::Update()
     case GameState::PLAYING:
         if (IsKeyPressed(KEY_ESCAPE))
         {
+            StopSound(level1Song); // Parar música del nivel
             FinishPlay();
+            PlaySound(menuSong); // Volver al menú
             state = GameState::MAIN_MENU;
             PlaySound(menuSong);
         }
