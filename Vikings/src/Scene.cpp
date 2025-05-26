@@ -230,6 +230,45 @@ std::vector<std::vector<int>> Scene::GenerateProceduralLayout()
         }
     }
 
+    // Colocar bloques de diamante
+    // Primero recolectamos todas las posiciones válidas (bloques de hielo)
+    std::vector<Point> ice_blocks;
+    for (int y = 2; y < ROWS-1; y++) {
+        for (int x = 1; x < COLS-1; x++) {
+            if (tilemap[y][x] == 1) {
+                ice_blocks.push_back({x, y});
+            }
+        }
+    }
+
+    // Colocar 3 diamantes en posiciones no adyacentes
+    int diamonds_placed = 0;
+    while (diamonds_placed < 3 && !ice_blocks.empty()) {
+        // Elegir una posición aleatoria de la lista
+        int idx = GetRandomValue(0, ice_blocks.size() - 1);
+        Point pos = ice_blocks[idx];
+        
+        // Verificar si es válido (no tiene diamantes adyacentes)
+        bool valid = true;
+        for (const auto& dir : directions) {
+            int nx = pos.x + dir.x;
+            int ny = pos.y + dir.y;
+            if (InBounds(nx, ny, COLS, ROWS) && tilemap[ny][nx] == 3) {
+                valid = false;
+                break;
+            }
+        }
+
+        if (valid) {
+            // Colocar diamante
+            tilemap[pos.y][pos.x] = 3;
+            diamonds_placed++;
+        }
+
+        // Remover la posición usada
+        ice_blocks.erase(ice_blocks.begin() + idx);
+    }
+
     return tilemap;
 }
 
@@ -306,7 +345,11 @@ AppStatus Scene::LoadLevel(int stage)
         {
             for (int x = 0; x < 15; ++x)
             {
-                map[(y + 2) * LEVEL_WIDTH + x] = proceduralLayout[y][x];
+                int value = proceduralLayout[y][x];
+                if (value == 3)
+                    map[(y + 2) * LEVEL_WIDTH + x] = (int)Tile::DIAMOND_BLOCK;
+                else
+                    map[(y + 2) * LEVEL_WIDTH + x] = value;
             }
         }
     }
