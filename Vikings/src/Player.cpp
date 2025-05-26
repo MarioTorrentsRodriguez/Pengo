@@ -6,6 +6,7 @@
 #include "MovingBlock.h"
 #include "Scene.h"
 #include <vector>
+
 inline bool IsIndestructibleBlock(Tile tile)
 {
     return tile == Tile::BLOCK_SQUARE1_TR ||
@@ -17,9 +18,8 @@ inline bool IsIndestructibleBlock(Tile tile)
         tile == Tile::BLOCK_VERT2_B ||
         tile == Tile::BLOCK_BLUE ||
         tile == Tile::BLOCK_HORIZ3_R ||
-        tile == Tile::DIAMOND_BLOCK;  // 💎 ← aún se puede empujar, solo no romper
+        tile == Tile::DIAMOND_BLOCK;
 }
-
 
 Player::Player(const Point& p, State s, Look view) :
     Entity(p, PLAYER_PHYSICAL_WIDTH, PLAYER_PHYSICAL_HEIGHT, PLAYER_FRAME_SIZE, PLAYER_FRAME_SIZE)
@@ -32,6 +32,7 @@ Player::Player(const Point& p, State s, Look view) :
     score = 0;
     moving = false;
     target_tile = p;
+    break_anim_texture = ResourceManager::Instance().GetTexture(Resource::IMG_BREAK_ANIM);
 }
 
 Player::~Player() {}
@@ -94,9 +95,7 @@ void Player::Update()
     HandleMovement();
 
     Sprite* sprite = dynamic_cast<Sprite*>(render);
-    sprite->Update();
-    if (sprite != nullptr)
-        sprite->Update();
+    if (sprite) sprite->Update();
 
     UpdateInvincibility(GetFrameTime());
 
@@ -104,6 +103,8 @@ void Player::Update()
     {
         TryPushTile();
     }
+
+    UpdateBreakAnims();
 }
 
 void Player::HandleMovement()
@@ -192,7 +193,6 @@ void Player::SetIdleAnimation()
     if (!sprite) return;
 
     int anim_id = 0;
-
     switch (look)
     {
     case Look::UP:    anim_id = (int)PlayerAnim::WALKING_UP;    break;
@@ -240,7 +240,7 @@ void Player::TakeHit()
     {
         if (lives > 0) lives--;
         invincible_timer = 0.5f;
-        was_hit_recently = true;  // << flag de golpe reciente
+        was_hit_recently = true;
     }
 }
 
@@ -250,10 +250,7 @@ void Player::InitScore() { score = 0; }
 void Player::IncrScore(int n) { score += n; }
 int Player::GetScore() { return score; }
 
-void Player::SetTileMap(TileMap* tilemap)
-{
-    map = tilemap;
-}
+void Player::SetTileMap(TileMap* tilemap) { map = tilemap; }
 
 void Player::DrawDebug(const Color& col) const
 {
@@ -264,10 +261,7 @@ void Player::Release()
 {
     ResourceManager& data = ResourceManager::Instance();
     data.ReleaseTexture(Resource::IMG_PLAYER);
-
-    if (render != nullptr) {
-        render->Release();
-    }
+    if (render != nullptr) render->Release();
 }
 
 void Player::TryPushTile()
@@ -275,14 +269,9 @@ void Player::TryPushTile()
     if (!map || !scene) return;
 
     AABB hitbox = GetHitbox();
-    Point front = {
-        pos.x + width / 2,
-        pos.y + height / 2
-    };
-
+    Point front = { pos.x + width / 2, pos.y + height / 2 };
     const int reach = static_cast<int>(TILE_SIZE * 0.75f);
 
-    // Calcular dirección y punto de contacto según dirección
     int dx = 0, dy = 0;
     switch (look)
     {
@@ -300,7 +289,6 @@ void Player::TryPushTile()
     Tile tile = map->GetTileIndex(x, y);
     if (!map->IsTileSolid(tile)) return;
 
-    // ✅ Transformar si es bloque especial (aunque no se pueda empujar)
     if (tile == static_cast<Tile>(2) || tile == static_cast<Tile>(13) ||
         tile == static_cast<Tile>(7) || tile == static_cast<Tile>(16))
     {
@@ -315,22 +303,20 @@ void Player::TryPushTile()
 
         while (!stack.empty())
         {
-            Point p = stack.back();
-            stack.pop_back();
-
+            Point p = stack.back(); stack.pop_back();
             if (!map->IsValidCell(p.x, p.y)) continue;
             if (visited[p.x][p.y]) continue;
             if (map->GetTileIndex(p.x, p.y) != tile) continue;
 
             visited[p.x][p.y] = true;
-            if(scene)
+            if (scene)
             {
                 TileBlink blink;
                 blink.tile_pos = { p.x, p.y };
                 blink.original = tile;
                 blink.alternate = replaceWith;
-                blink.interval = 0.15f;          // tiempo entre cada cambio
-                blink.remaining_blinks = 6;      // 2 veces (on → off → on → off → final)
+                blink.interval = 0.15f;
+                blink.remaining_blinks = 6;
                 blink.timer = 0.0f;
                 scene->tile_blinks.push_back(blink);
             }
@@ -341,40 +327,56 @@ void Player::TryPushTile()
             stack.push_back({ p.x, p.y - 1 });
         }
 
-        return;  // 👈 no empujamos si se transforma
+        return;
     }
 
-    // 🚫 Cancelar empuje si bloque inmediato está ocupado
     int nx = x + dx;
     int ny = y + dy;
     if (!map->IsValidCell(nx, ny) || map->GetTileIndex(nx, ny) != Tile::AIR)
     {
         if (!IsIndestructibleBlock(tile))
+        {
             map->SetTile(x, y, Tile::AIR);
+
+            if (break_anim_texture)
+            {
+                Vector2 pos = { (float)(x * TILE_SIZE), (float)(y * TILE_SIZE) };
+                break_anims.emplace_back(pos, break_anim_texture);
+            }
+        }
         return;
     }
 
-    // 🔍 Buscar posición final libre
-    int target_x = nx;
-    int target_y = ny;
+    int target_x = nx, target_y = ny;
     while (true)
     {
         nx = target_x + dx;
         ny = target_y + dy;
-
         if (!map->IsValidCell(nx, ny)) break;
         if (map->GetTileIndex(nx, ny) != Tile::AIR) break;
-
-        target_x = nx;
-        target_y = ny;
+        target_x = nx; target_y = ny;
     }
 
-    // ✅ Lanzar el bloque
     map->SetTile(x, y, Tile::AIR);
     Point from = { x * TILE_SIZE, y * TILE_SIZE };
     Point to = { target_x * TILE_SIZE, target_y * TILE_SIZE };
-
     scene->AddMovingBlock(MovingBlock(from, to, tile));
 }
 
+void Player::UpdateBreakAnims()
+{
+    float delta = GetFrameTime();
+    for (auto& anim : break_anims)
+        anim.Update(delta);
 
+    break_anims.erase(
+        std::remove_if(break_anims.begin(), break_anims.end(),
+            [](const BreakAnimation& a) { return a.IsFinished(); }),
+        break_anims.end());
+}
+
+void Player::DrawBreakAnims() const
+{
+    for (const auto& anim : break_anims)
+        anim.Draw();
+}

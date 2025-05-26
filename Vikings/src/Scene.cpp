@@ -476,12 +476,14 @@ void Scene::Render()
 		Rectangle rect = level->GetTileRect((int)b.tile);
 		b.Draw(level->GetTilesetTexture(), rect);
 	}
-	if (debug == DebugMode::OFF || debug == DebugMode::SPRITES_AND_HITBOXES)
-	{
-		player->Draw();
-		enemies->Draw();
-		shots->Draw();
-	}
+    if (debug == DebugMode::OFF || debug == DebugMode::SPRITES_AND_HITBOXES)
+    {
+        player->Draw();
+        player->DrawBreakAnims(); // Añadir esta línea para que se dibujen las animaciones del jugador
+        enemies->Draw();
+        shots->Draw();
+    }
+
 
 	if (debug != DebugMode::OFF)
 	{
