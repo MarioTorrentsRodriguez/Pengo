@@ -72,6 +72,11 @@ void EnemyManager::Add(const Point& pos, EnemyType type, const AABB& area, Look 
         {
             enemy->SetPos(pos);
             enemies.push_back(enemy);
+
+            // 🔊 Reproducir sonido de aparición
+            if (enemy_spawn_sound != nullptr) {
+                PlaySound(*enemy_spawn_sound);
+            }
         }
         else
         {
@@ -153,5 +158,8 @@ void EnemyManager::Release()
 }
 void EnemyManager::SetEnemyDeathSound(Sound* sound) {
     enemy_death_sound = sound;
+}
+void EnemyManager::SetEnemySpawnSound(Sound* sound) {
+    enemy_spawn_sound = sound;
 }
 

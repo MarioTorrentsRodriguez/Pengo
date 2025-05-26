@@ -49,6 +49,8 @@ private:
     Sound level2Song;
     Sound missSound;
     Sound winSound;
+    Sound enemySpawnSound;
+
 
     //To work with original game units and then scale the result
     RenderTexture2D target;

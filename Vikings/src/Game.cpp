@@ -100,6 +100,9 @@ AppStatus Game::LoadResources()
     winSound = LoadSound("audio/Act Clear.mp3");
     enemyDeathSound = LoadSound("audio/enemy_die.mp3");
     SetSoundVolume(enemyDeathSound, 1.0f);
+    enemySpawnSound = LoadSound("audio/Snow-Bee Spawning.mp3");
+    SetSoundVolume(enemySpawnSound, 1.0f);
+
 
 
     // Reproducir canción del menú
@@ -250,6 +253,8 @@ void Game::Cleanup()
     UnloadSound(missSound);
     UnloadSound(winSound);
     UnloadSound(enemyDeathSound);
+    UnloadSound(enemySpawnSound);
+
     CloseAudioDevice();
     CloseWindow();
 }

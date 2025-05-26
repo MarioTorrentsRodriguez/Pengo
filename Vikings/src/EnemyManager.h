@@ -34,7 +34,9 @@ public:
         }
         return false;
     }
+    
     void SetEnemyDeathSound(Sound* sound);
+    void SetEnemySpawnSound(Sound* sound);
 
 
 private:
@@ -43,6 +45,8 @@ private:
     TileMap* tilemap;
     ShotManager* shots;
     Sound* enemy_death_sound = nullptr;
+    Sound* enemy_spawn_sound = nullptr;
+
 
 };
 
