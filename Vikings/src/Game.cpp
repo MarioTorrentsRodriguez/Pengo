@@ -98,6 +98,8 @@ AppStatus Game::LoadResources()
     level2Song = LoadSound("audio/level2Song.mp3");
     missSound = LoadSound("audio/miss.mp3");
     winSound = LoadSound("audio/Act Clear.mp3");
+    enemyDeathSound = LoadSound("audio/enemy_die.mp3");
+    SetSoundVolume(enemyDeathSound, 1.0f);
 
 
     // Reproducir canción del menú
@@ -247,6 +249,7 @@ void Game::Cleanup()
     UnloadSound(level2Song);
     UnloadSound(missSound);
     UnloadSound(winSound);
+    UnloadSound(enemyDeathSound);
     CloseAudioDevice();
     CloseWindow();
 }

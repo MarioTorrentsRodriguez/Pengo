@@ -82,16 +82,16 @@ void EnemyManager::Add(const Point& pos, EnemyType type, const AABB& area, Look 
 
 void EnemyManager::Update(Player* player)
 {
+    // PRIMERA PASADA: actualizar enemigos vivos
     for (Enemy* enemy : enemies)
     {
         if (enemy->IsAlive())
         {
             if (enemy->IsBeingPushed())
-                continue;  // ⛔ Saltar este enemigo, está siendo empujado
+                continue;
 
             bool shoot = enemy->Update(player->GetHitbox());
 
-            // Colisión con el jugador
             if (enemy->GetHitbox().Intersects(player->GetHitbox()))
             {
                 player->TakeHit();
@@ -101,10 +101,26 @@ void EnemyManager::Update(Player* player)
             {
                 Point p, d;
                 enemy->GetShootingPosDir(&p, &d);
+                // Aquí podrías añadir disparos si lo deseas
             }
         }
     }
+
+    //SEGUNDA PASADA: detectar enemigos que acaban de morir
+    for (Enemy* enemy : enemies)
+    {
+        if (!enemy->IsAlive() && enemy->WasJustKilled())
+        {
+            if (enemy_death_sound != nullptr)
+            {
+                TraceLog(LOG_INFO, "🧨 Enemigo muerto, sonido ejecutado");
+                PlaySound(*enemy_death_sound);
+            }
+            enemy->MarkKillHandled();
+        }
+    }
 }
+
 
 void EnemyManager::Draw() const
 {
@@ -135,3 +151,7 @@ void EnemyManager::Release()
     }
     enemies.clear();
 }
+void EnemyManager::SetEnemyDeathSound(Sound* sound) {
+    enemy_death_sound = sound;
+}
+

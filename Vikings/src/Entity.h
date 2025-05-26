@@ -36,6 +36,10 @@ public:
 	void DrawHitbox(const Color& col) const;
 	void DrawHitbox(int x, int y, int w, int h, const Color& col) const;
 
+	bool WasJustKilled() const { return !alive && !kill_handled; }
+	void MarkKillHandled() { kill_handled = true; }
+
+
 protected:
 	Point GetRenderingPosition() const;
 
@@ -51,4 +55,7 @@ protected:
 	//Flag to mark wether an entity is active or inactive. Trick to manage dynamic arrays of
 	//entities with static arrays without new/delete operations
 	bool alive;
+
+	bool kill_handled = true;
+
 };

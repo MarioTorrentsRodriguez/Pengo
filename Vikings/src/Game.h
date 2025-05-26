@@ -28,6 +28,8 @@ public:
     void ChangeState(GameState new_state) { state = new_state; }
     void FinishPlay();
     GameState state;
+    Sound enemyDeathSound;
+
 private:
     AppStatus BeginPlay();
 

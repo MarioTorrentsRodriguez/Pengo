@@ -112,6 +112,8 @@ AppStatus Scene::Init()
 	enemies = new EnemyManager();
 	enemies->SetTileMap(level);
 	enemies->SetShotManager(shots);
+    enemies->SetEnemyDeathSound(&g_game->enemyDeathSound);
+
 
 	// Cargar el primer nivel antes de generar enemigos
 	if (LoadLevel(1) != AppStatus::OK) return AppStatus::ERROR;

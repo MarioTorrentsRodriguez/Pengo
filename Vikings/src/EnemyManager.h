@@ -34,11 +34,15 @@ public:
         }
         return false;
     }
+    void SetEnemyDeathSound(Sound* sound);
+
 
 private:
     bool being_pushed = false;
     std::vector<Enemy*> enemies;
     TileMap* tilemap;
     ShotManager* shots;
+    Sound* enemy_death_sound = nullptr;
+
 };
 

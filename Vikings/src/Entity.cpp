@@ -52,6 +52,7 @@ AABB Entity::GetHitbox() const
 }
 void Entity::SetAlive(bool b)
 {
+	if (!b && alive) kill_handled = false;
 	alive = b;
 }
 bool Entity::IsAlive() const
