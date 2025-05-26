@@ -41,12 +41,10 @@ private:
     const Texture2D* img_lose;
     const Texture2D* img_controls;
 
-    Sound menuSong = LoadSound("audio/mainMenu.mp3");
-    Sound level1Song = LoadSound("audio/level1Song.mp3");
-    Sound level2Song = LoadSound("audio/level2Song.mp3");
-
-
-
+    // Declaraciones de sonido (se inicializan en LoadResources)
+    Sound menuSong;
+    Sound level1Song;
+    Sound level2Song;
 
     //To work with original game units and then scale the result
     RenderTexture2D target;
