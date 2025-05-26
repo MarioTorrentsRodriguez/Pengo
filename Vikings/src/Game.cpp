@@ -96,6 +96,7 @@ AppStatus Game::LoadResources()
     menuSong = LoadSound("audio/mainMenu.mp3");
     level1Song = LoadSound("audio/level1Song.mp3");
     level2Song = LoadSound("audio/level2Song.mp3");
+    missSound = LoadSound("audio/miss.mp3");
 
     // Reproducir canción del menú
     PlaySound(menuSong);
@@ -170,6 +171,7 @@ AppStatus Game::Update()
             }
             else if (IsKeyPressed(KEY_L)) {
                 StopSound(level1Song); // Detener música del nivel
+                PlaySound(missSound);// Reproducir sonido de derrota
                 FinishPlay();
                 state = GameState::LOSE_SCREEN;
             }

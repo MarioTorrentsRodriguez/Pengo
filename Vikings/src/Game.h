@@ -45,6 +45,7 @@ private:
     Sound menuSong;
     Sound level1Song;
     Sound level2Song;
+    Sound missSound;
 
     //To work with original game units and then scale the result
     RenderTexture2D target;
