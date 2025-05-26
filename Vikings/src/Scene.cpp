@@ -358,15 +358,56 @@ AppStatus Scene::LoadLevel(int stage)
     else
     {
         LOG("Failed to load level, stage %d doesn't exist", stage);
+        delete[] map;
         return AppStatus::ERROR;
     }
 
+    // Cargamos el mapa en el TileMap
     if (level->Load(map, LEVEL_WIDTH, LEVEL_HEIGHT) != AppStatus::OK)
+    {
+        delete[] map;
         return AppStatus::ERROR;
+    }
 
+    // Posicionamos al jugador
     Point pos = { middle_x * TILE_SIZE, (middle_y + 2) * TILE_SIZE };
-    player->SetPos(pos);
+    
+    // Verificar si el jugador está sobre un bloque de hielo
+    int playerTileX = pos.x / TILE_SIZE;
+    int playerTileY = pos.y / TILE_SIZE;
+    
+    // Si está sobre un bloque de hielo, buscar una posición válida
+    if (level->GetTileIndex(playerTileX, playerTileY) == static_cast<Tile>(1))
+    {
+        // Definir las cuatro direcciones a comprobar (arriba, derecha, abajo, izquierda)
+        const std::vector<Point> directions = {
+            {0, -1},  // Arriba
+            {1, 0},   // Derecha
+            {0, 1},   // Abajo
+            {-1, 0}   // Izquierda
+        };
 
+        // Comprobar cada dirección
+        bool moved = false;
+        for (const auto& dir : directions)
+        {
+            int newTileX = playerTileX + dir.x;
+            int newTileY = playerTileY + dir.y;
+
+            // Verificar si la posición es válida y está vacía (tile == 0)
+            if (level->IsValidCell(newTileX, newTileY) && 
+                level->GetTileIndex(newTileX, newTileY) == static_cast<Tile>(0))
+            {
+                // Mover al jugador a la nueva posición
+                pos.x = newTileX * TILE_SIZE;
+                pos.y = newTileY * TILE_SIZE;
+                moved = true;
+                break;
+            }
+        }
+    }
+
+    player->SetPos(pos);
     level->ClearObjectEntityPositions();
     delete[] map;
 
@@ -460,6 +501,7 @@ void Scene::Update()
     else if (IsKeyPressed(KEY_TWO)) {
         LoadLevel(2);
         current_stage = 2;
+
     }
 
     level->Update();
@@ -469,13 +511,19 @@ void Scene::Update()
     if (enemiesSpawned) {
         enemies->Update(player);
         
-        // Verificar si todos los enemigos han sido eliminados y estamos en el nivel 1
-        if (!enemies->HasLiveEnemies() && current_stage == 1) {
-            // Cambiar al nivel 2
-            LoadLevel(2);
-            current_stage = 2;
+        // Verificar si todos los enemigos han sido eliminados
+        if (!enemies->HasLiveEnemies()) {
+            // Si estamos en el nivel 1, pasar al nivel 2
+            if (current_stage == 1) {
+                LoadLevel(2);
+                current_stage = 2;
+            }
+            // Si estamos en el nivel 2, reiniciar el mismo nivel
+            else {
+                LoadLevel(current_stage);
+            }
 
-            // Reinicializar enemigos para el nivel 2
+            // Generar nuevos enemigos
             const int(*layout)[15] = layouts[current_stage - 1];
             AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
             
