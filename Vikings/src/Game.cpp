@@ -97,6 +97,8 @@ AppStatus Game::LoadResources()
     level1Song = LoadSound("audio/level1Song.mp3");
     level2Song = LoadSound("audio/level2Song.mp3");
     missSound = LoadSound("audio/miss.mp3");
+    winSound = LoadSound("audio/Act Clear.mp3");
+
 
     // Reproducir canción del menú
     PlaySound(menuSong);
@@ -166,6 +168,7 @@ AppStatus Game::Update()
             // Simulación de victoria y derrota con W y L
             if (IsKeyPressed(KEY_W)) {
                 StopSound(level1Song); // Detener música del nivel
+                PlaySound(winSound);           // Reproducir sonido de victoria
                 FinishPlay();
                 state = GameState::WIN_SCREEN;
             }
@@ -238,12 +241,14 @@ void Game::Render()
 }
 void Game::Cleanup()
 {
-    /*UnloadResources();
+    UnloadResources();
     UnloadSound(menuSong);
     UnloadSound(level1Song);
     UnloadSound(level2Song);
+    UnloadSound(missSound);
+    UnloadSound(winSound);
     CloseAudioDevice();
-    CloseWindow();*/
+    CloseWindow();
 }
 void Game::UnloadResources()
 {
