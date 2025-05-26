@@ -4,6 +4,10 @@
 #include "ShotManager.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "raylib.h" // para usar Vector2 y Texture2D
+
+// Declaración de ScoreAnimation (estructura definida en .cpp)
+struct ScoreAnimation;
 
 class EnemyManager
 {
@@ -23,9 +27,11 @@ public:
     void PushEnemiesByBlock(const AABB& blockBox, const Point& direction, float speed);
     void SetBeingPushed(bool value) { being_pushed = value; }
     bool IsBeingPushed() const { return being_pushed; }
+
     //  Getter para acceder a la lista de enemigos desde Scene
     std::vector<Enemy*>& GetEnemies() { return enemies; }
-    // Añadir este método
+
+    // Verifica si quedan enemigos vivos
     bool HasLiveEnemies() const {
         for (const auto& enemy : enemies) {
             if (enemy->IsAlive()) {
@@ -34,19 +40,23 @@ public:
         }
         return false;
     }
-    
+
     void SetEnemyDeathSound(Sound* sound);
     void SetEnemySpawnSound(Sound* sound);
 
+    void AddScoreAnim(Vector2 pos, int frame, const Texture2D* tex);
 
 private:
     bool being_pushed = false;
     std::vector<Enemy*> enemies;
     TileMap* tilemap;
     ShotManager* shots;
+
+    // Sonidos
     Sound* enemy_death_sound = nullptr;
     Sound* enemy_spawn_sound = nullptr;
 
-
+    // Animaciones de puntuación
+    std::vector<ScoreAnimation> score_anims;
+    const Texture2D* score_anim_texture = nullptr;
 };
-

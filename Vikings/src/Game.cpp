@@ -91,6 +91,10 @@ AppStatus Game::LoadResources()
 
     if (data.LoadTexture(Resource::IMG_BREAK_ANIM, "images/animacionromperbloques.png") != AppStatus::OK)
         return AppStatus::ERROR;
+    
+    if (data.LoadTexture(Resource::IMG_SCORE_ANIM, "images/puntuacion.png") != AppStatus::OK)
+        return AppStatus::ERROR;
+
 
     // Cargar sonidos
     menuSong = LoadSound("audio/mainMenu.mp3");

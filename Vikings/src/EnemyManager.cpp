@@ -1,10 +1,13 @@
 ﻿#include "EnemyManager.h"
 #include "EnemyGlorp.h"
+#include "ResourceManager.h"
+#include "Sprite.h"
 
 EnemyManager::EnemyManager()
 {
     tilemap = nullptr;
     shots = nullptr;
+    score_anim_texture = nullptr;
 }
 
 EnemyManager::~EnemyManager()
@@ -38,17 +41,10 @@ void EnemyManager::PushEnemiesByBlock(const AABB& blockBox, const Point& directi
                 Point currentPos = enemy->GetPosition();
                 Point newPos = currentPos;
 
-                // ✅ Centrado horizontal si el movimiento es vertical
                 if (direction.y != 0)
-                {
                     newPos.x = blockBox.pos.x + (TILE_SIZE - enemy->GetWidth()) / 2;
-                }
-
-                // ✅ Centrado vertical si el movimiento es horizontal
                 if (direction.x != 0)
-                {
                     newPos.y = blockBox.pos.y + (TILE_SIZE - enemy->GetHeight()) / 2;
-                }
 
                 enemy->SetPos(newPos);
             }
@@ -73,7 +69,6 @@ void EnemyManager::Add(const Point& pos, EnemyType type, const AABB& area, Look 
             enemy->SetPos(pos);
             enemies.push_back(enemy);
 
-            // 🔊 Reproducir sonido de aparición
             if (enemy_spawn_sound != nullptr) {
                 PlaySound(*enemy_spawn_sound);
             }
@@ -106,26 +101,40 @@ void EnemyManager::Update(Player* player)
             {
                 Point p, d;
                 enemy->GetShootingPosDir(&p, &d);
-                // Aquí podrías añadir disparos si lo deseas
             }
         }
     }
 
-    //SEGUNDA PASADA: detectar enemigos que acaban de morir
+    // SEGUNDA PASADA: enemigos que acaban de morir
     for (Enemy* enemy : enemies)
     {
         if (!enemy->IsAlive() && enemy->WasJustKilled())
         {
             if (enemy_death_sound != nullptr)
             {
-                TraceLog(LOG_INFO, "🧨 Enemigo muerto, sonido ejecutado");
+                TraceLog(LOG_INFO, " Enemigo muerto, sonido ejecutado");
                 PlaySound(*enemy_death_sound);
             }
+
+            // Animación de puntuación
+       
+
+            player->IncrScore(500);
             enemy->MarkKillHandled();
         }
     }
-}
 
+    // Actualizar animaciones de puntuación
+    float delta = GetFrameTime();
+    for (auto& anim : score_anims)
+        anim.Update(delta);
+
+    score_anims.erase(
+        std::remove_if(score_anims.begin(), score_anims.end(),
+            [](const ScoreAnimation& a) { return a.IsFinished(); }),
+        score_anims.end()
+    );
+}
 
 void EnemyManager::Draw() const
 {
@@ -134,6 +143,9 @@ void EnemyManager::Draw() const
         if (enemy->IsAlive())
             enemy->Draw();
     }
+
+    for (const auto& anim : score_anims)
+        anim.Draw();
 }
 
 void EnemyManager::DrawDebug() const
@@ -156,10 +168,20 @@ void EnemyManager::Release()
     }
     enemies.clear();
 }
-void EnemyManager::SetEnemyDeathSound(Sound* sound) {
+
+void EnemyManager::SetEnemyDeathSound(Sound* sound)
+{
     enemy_death_sound = sound;
 }
-void EnemyManager::SetEnemySpawnSound(Sound* sound) {
+
+void EnemyManager::SetEnemySpawnSound(Sound* sound)
+{
     enemy_spawn_sound = sound;
 }
-
+void EnemyManager::AddScoreAnim(Vector2 pos, int frame, const Texture2D* tex)
+{
+    ScoreAnimation anim(pos, tex);
+    anim.current_frame = frame;
+    anim.timer = 0.0f;
+    score_anims.push_back(anim);
+}

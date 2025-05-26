@@ -597,6 +597,10 @@ void Scene::Update()
 
                 AABB finalBox = { b.end, TILE_SIZE, TILE_SIZE };
 
+                //  MODIFICACIÓN: lógica de eliminación + puntuación + animación
+                int enemies_killed = 0;
+                Vector2 score_pos = { (float)b.end.x, (float)b.end.y };
+
                 for (auto& enemy : enemies->GetEnemies())
                 {
                     if (!enemy->IsAlive()) continue;
@@ -613,8 +617,22 @@ void Scene::Update()
                         if ((leftSolid && rightSolid) || groundSolid)
                         {
                             enemy->SetAlive(false);
-                            player->IncrScore(400);
+                            enemies_killed++;
                         }
+                    }
+                }
+
+                if (enemies_killed > 0)
+                {
+                    static const int POINTS[] = { 0, 400, 1600, 3200, 6400 };
+                    int clamped = std::min(enemies_killed, 4);
+
+                    player->IncrScore(POINTS[clamped]);
+
+                    const Texture2D* score_tex = ResourceManager::Instance().GetTexture(Resource::IMG_SCORE_ANIM);
+                    if (score_tex && score_tex->id != 0)
+                    {
+                        enemies->AddScoreAnim(score_pos, clamped - 1, score_tex);
                     }
                 }
 
