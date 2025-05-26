@@ -613,7 +613,7 @@ void Scene::Update()
                         if ((leftSolid && rightSolid) || groundSolid)
                         {
                             enemy->SetAlive(false);
-                            player->IncrScore(500);
+                            player->IncrScore(400);
                         }
                     }
                 }
