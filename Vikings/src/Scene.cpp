@@ -466,6 +466,44 @@ void Scene::Update()
     // Solo actualiza enemigos si ya se han activado
     if (enemiesSpawned) {
         enemies->Update(player);
+        
+        // Verificar si todos los enemigos han sido eliminados y estamos en el nivel 1
+        if (!enemies->HasLiveEnemies() && current_stage == 1) {
+            // Cambiar al nivel 2
+            LoadLevel(2);
+            current_stage = 2;
+
+            // Reinicializar enemigos para el nivel 2
+            const int(*layout)[15] = layouts[current_stage - 1];
+            AABB area = { {0, 0}, LEVEL_WIDTH * TILE_SIZE, LEVEL_HEIGHT * TILE_SIZE };
+            
+            const int enemyCount = 5;
+            std::vector<Point> usedPositions;
+
+            for (int i = 0; i < enemyCount; ++i) {
+                Point pos;
+                bool unique = false;
+
+                while (!unique) {
+                    pos = GetRandomFreePositionFromLayout(layout);
+                    unique = true;
+
+                    for (const Point& used : usedPositions) {
+                        if (used.x == pos.x && used.y == pos.y) {
+                            unique = false;
+                            break;
+                        }
+                    }
+                }
+
+                usedPositions.push_back(pos);
+                enemies->Add(pos, EnemyType::GLORP, area);
+            }
+            
+            // Reiniciar el delay de spawn de enemigos
+            spawnDelayStartTime = GetTime();
+            enemiesSpawned = false;
+        }
     }
 
     shots->Update(player->GetHitbox());

@@ -25,6 +25,15 @@ public:
     bool IsBeingPushed() const { return being_pushed; }
     // ✅ Getter para acceder a la lista de enemigos desde Scene
     std::vector<Enemy*>& GetEnemies() { return enemies; }
+    // Añadir este método
+    bool HasLiveEnemies() const {
+        for (const auto& enemy : enemies) {
+            if (enemy->IsAlive()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 private:
     bool being_pushed = false;
