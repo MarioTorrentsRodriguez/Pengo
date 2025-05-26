@@ -57,4 +57,10 @@ private:
     Sound level2Song = LoadSound("audio/level2Song.mp3");*/
 
     DebugMode debug;
+
+    // ... otros miembros ...
+    std::vector<std::vector<int>> GenerateProceduralLayout();
+    bool InBounds(int x, int y, int cols, int rows) const;
+    std::vector<Point> GetSurroundingPositions(int x, int y, int dx, int dy, int cols, int rows) const;
+    bool IsViable(const std::vector<std::vector<int>>& tilemap, int x, int y, int dx, int dy, int cols, int rows) const;
 };

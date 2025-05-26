@@ -157,47 +157,175 @@ AppStatus Scene::Init()
 	return AppStatus::OK;
 }
 
+std::vector<std::vector<int>> Scene::GenerateProceduralLayout()
+{
+    const int ROWS = 15;
+    const int COLS = 15;
+    
+    // Crear el tilemap base
+    std::vector<std::vector<int>> tilemap = {
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {6,7,7,7,7,7,7,7,7,7,7,7,7,7,9},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {5,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+        {15,16,16,16,16,16,16,16,16,16,16,16,16,16,11}
+    };
+
+    // Punto de inicio
+    int start_x = 1;
+    int start_y = ROWS - 2;
+    tilemap[start_y][start_x] = 0;
+
+    std::vector<Point> active = {{start_x, start_y}};
+    std::vector<Point> path = {{start_x, start_y}};
+    
+    // Direcciones cardinales
+    const std::vector<Point> directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+    while (!active.empty())
+    {
+        int idx = GetRandomValue(0, active.size() - 1);
+        Point current = active[idx];
+        bool moved = false;
+
+        // Copiar y mezclar direcciones
+        std::vector<Point> shuffled_dirs = directions;
+        for (int i = shuffled_dirs.size() - 1; i > 0; i--)
+        {
+            int j = GetRandomValue(0, i);
+            std::swap(shuffled_dirs[i], shuffled_dirs[j]);
+        }
+
+        for (const auto& dir : shuffled_dirs)
+        {
+            int nx = current.x + dir.x;
+            int ny = current.y + dir.y;
+
+            if (InBounds(nx, ny, COLS, ROWS) && tilemap[ny][nx] == 1)
+            {
+                if (IsViable(tilemap, nx, ny, dir.x, dir.y, COLS, ROWS))
+                {
+                    tilemap[ny][nx] = 0;
+                    path.push_back({nx, ny});
+                    active.push_back({nx, ny});
+                    moved = true;
+                    break;
+                }
+            }
+        }
+
+        if (!moved)
+        {
+            active.erase(active.begin() + idx);
+        }
+    }
+
+    return tilemap;
+}
+
+bool Scene::InBounds(int x, int y, int cols, int rows) const
+{
+    return x >= 0 && x < cols && y >= 0 && y < rows;
+}
+
+std::vector<Point> Scene::GetSurroundingPositions(int x, int y, int dx, int dy, int cols, int rows) const
+{
+    std::vector<Point> positions;
+    int alt1 = dy, alt2 = dx;
+    
+    std::vector<Point> possible = {
+        {x + dx, y + dy},
+        {x + alt1, y + alt2},
+        {x - alt1, y - alt2},
+        {x + dx + alt1, y + dy + alt2},
+        {x + dx - alt1, y + dy - alt2}
+    };
+
+    for (const auto& pos : possible)
+    {
+        if (InBounds(pos.x, pos.y, cols, rows))
+        {
+            positions.push_back(pos);
+        }
+    }
+
+    return positions;
+}
+
+bool Scene::IsViable(const std::vector<std::vector<int>>& tilemap, int x, int y, int dx, int dy, int cols, int rows) const
+{
+    auto positions = GetSurroundingPositions(x, y, dx, dy, cols, rows);
+    for (const auto& pos : positions)
+    {
+        if (tilemap[pos.y][pos.x] == 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
 
 AppStatus Scene::LoadLevel(int stage)
 {
-	int size = LEVEL_WIDTH * LEVEL_HEIGHT;
-	int* map = new int[size];
-	for (int i = 0; i < size; ++i) map[i] = 0;
+    int size = LEVEL_WIDTH * LEVEL_HEIGHT;
+    int* map = new int[size];
+    for (int i = 0; i < size; ++i) map[i] = 0;
 
-	int middle_x = 7, middle_y = 7;
+    int middle_x = 7, middle_y = 7;
 
-	if (stage == 1 || stage == 2)
-	{
-		const int(*layout)[15] = layouts[stage - 1];
-		for (int y = 0; y < 15; ++y)
-		{
-			for (int x = 0; x < 15; ++x)
-			{
-				int value = layout[y][x];
+    if (stage == 1)
+    {
+        const int(*layout)[15] = layouts[stage - 1];
+        for (int y = 0; y < 15; ++y)
+        {
+            for (int x = 0; x < 15; ++x)
+            {
+                int value = layout[y][x];
+                if (value == 3)
+                    map[(y + 2) * LEVEL_WIDTH + x] = (int)Tile::DIAMOND_BLOCK;
+                else
+                    map[(y + 2) * LEVEL_WIDTH + x] = value;
+            }
+        }
+    }
+    else if (stage == 2)
+    {
+        // Generar mapa procedural para el nivel 2
+        auto proceduralLayout = GenerateProceduralLayout();
+        for (int y = 0; y < 15; ++y)
+        {
+            for (int x = 0; x < 15; ++x)
+            {
+                map[(y + 2) * LEVEL_WIDTH + x] = proceduralLayout[y][x];
+            }
+        }
+    }
+    else
+    {
+        LOG("Failed to load level, stage %d doesn't exist", stage);
+        return AppStatus::ERROR;
+    }
 
-				if (value == 3)
-					map[(y + 2) * LEVEL_WIDTH + x] = (int)Tile::DIAMOND_BLOCK;
-				else
-					map[(y + 2) * LEVEL_WIDTH + x] = value;
-			}
-		}
-	}
-	else
-	{
-		LOG("Failed to load level, stage %d doesn't exist", stage);
-		return AppStatus::ERROR;
-	}
+    if (level->Load(map, LEVEL_WIDTH, LEVEL_HEIGHT) != AppStatus::OK)
+        return AppStatus::ERROR;
 
-	if (level->Load(map, LEVEL_WIDTH, LEVEL_HEIGHT) != AppStatus::OK)
-		return AppStatus::ERROR;
+    Point pos = { middle_x * TILE_SIZE, (middle_y + 2) * TILE_SIZE };
+    player->SetPos(pos);
 
-	Point pos = { middle_x * TILE_SIZE, (middle_y + 2) * TILE_SIZE };
-	player->SetPos(pos);
+    level->ClearObjectEntityPositions();
+    delete[] map;
 
-	level->ClearObjectEntityPositions();
-	delete[] map;
-
-	return AppStatus::OK;
+    return AppStatus::OK;
 }
 
 void Scene::AddMovingBlock(const MovingBlock& block)
