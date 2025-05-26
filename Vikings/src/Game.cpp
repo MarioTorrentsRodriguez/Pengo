@@ -158,16 +158,18 @@ AppStatus Game::Update()
             FinishPlay();
             PlaySound(menuSong); // Volver al menú
             state = GameState::MAIN_MENU;
-            PlaySound(menuSong);
+            
         }
         else
         {
             // Simulación de victoria y derrota con W y L
             if (IsKeyPressed(KEY_W)) {
+                StopSound(level1Song); // Detener música del nivel
                 FinishPlay();
                 state = GameState::WIN_SCREEN;
             }
             else if (IsKeyPressed(KEY_L)) {
+                StopSound(level1Song); // Detener música del nivel
                 FinishPlay();
                 state = GameState::LOSE_SCREEN;
             }
