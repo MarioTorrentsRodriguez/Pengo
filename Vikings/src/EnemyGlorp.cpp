@@ -121,7 +121,6 @@ void EnemyGlorp::Draw() const
     for (const auto& anim : break_anims)
     {
         TraceLog(LOG_INFO, "Dibujando animación en (%f, %f)", anim.position.x, anim.position.y);
-        DrawRectangle(anim.position.x, anim.position.y, 16, 16, RED); // cuadrado rojo de debug
         anim.Draw();
     }
 }
