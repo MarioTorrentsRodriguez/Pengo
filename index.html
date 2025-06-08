@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        font-family: 'Futura', sans-serif;
+        overflow-x: hidden;
+      }
+
+      .frame {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: 100vh;
+        padding: 0;
+      }
+
+      .desktop {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        min-height: 100vh;
+        padding: 5vh 5vw;
+        background-color: #dbffff;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        max-width: 900px;
+        margin-bottom: 2vh;
+      }
+
+      .logos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        width: 100%;
+      }
+
+      .image,
+      .forevergames {
+        height: auto;
+        max-height: 80px;
+        width: auto;
+        flex: 0 0 auto;
+      }
+
+      .text-wrapper {
+        color: #99001e;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 1rem;
+      }
+
+      .main {
+        width: 100%;
+        max-width: 900px;
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0px 2px 12px rgba(21, 0, 100, 0.17);
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .div {
+        font-size: 1.25rem;
+        color: #99001e;
+        font-weight: bold;
+      }
+
+      .text-wrapper-2,
+      .v-ctor-p-rez-ortega {
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #000;
+      }
+
+      .div-2 {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 2rem;
+      }
+
+      .img {
+        max-width: 150px;
+        height: auto;
+      }
+
+      .video-placeholder {
+        width: 100%;
+        background-color: #d9d9d9;
+        border-radius: 8px;
+      }
+
+      @media (max-width: 600px) {
+        .main {
+          padding: 1rem;
+        }
+
+        .div {
+          font-size: 1.1rem;
+        }
+
+        .text-wrapper-2,
+        .v-ctor-p-rez-ortega {
+          font-size: 0.95rem;
+        }
+
+        .image,
+        .forevergames {
+          max-height: 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <div class="desktop">
+        <header class="header">
+          <div class="logos">
+            <img class="image" src="image.png" alt="Logo 1" />
+            <img class="forevergames" src="forevergames.png" alt="Logo 2" />
+          </div>
+          <p class="text-wrapper">Recreation of the 1982 arcade classic</p>
+        </header>
+
+        <div class="main">
+          <div class="section">
+            <div class="div">Game Description</div>
+            <p class="text-wrapper-2">
+              Este proyecto es una reinterpretación del juego arcade Pengo (Sega, 1982), donde el jugador empuja bloques
+              de hielo para derrotar enemigos y sobrevivir. El juego ha sido desarrollado en C++ usando la librería
+              Raylib como proyecto académico de la UPC.
+            </p>
+          </div>
+
+          <div class="section">
+            <div class="div">Team</div>
+            <div class="div-2">
+              <p class="v-ctor-p-rez-ortega">
+                Víctor Pérez Ortega: implementation of sound, enemies, map generation, etc.<br />
+                Mario Torrents Rodríguez: coding, design
+              </p>
+              <img class="img" src="forevergames1.png" alt="Team image" />
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="div">Gameplay video</div>
+            <div class="text-wrapper-2">
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/VIDEO_ID"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                style="border-radius: 8px;"
+              ></iframe>
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="div">Download link</div>
+            <div class="text-wrapper-2">
+              <a href="pengo-final.zip" download>Click here to download</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
