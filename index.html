@@ -93,8 +93,7 @@
         font-weight: bold;
       }
 
-      .text-wrapper-2,
-      .v-ctor-p-rez-ortega {
+      .text-wrapper-2 {
         font-size: 1rem;
         line-height: 1.5;
         color: #000;
@@ -103,8 +102,8 @@
       .div-2 {
         display: flex;
         flex-wrap: wrap;
-        align-items: flex-start;
         gap: 2rem;
+        align-items: flex-start;
       }
 
       .img {
@@ -127,14 +126,22 @@
           font-size: 1.1rem;
         }
 
-        .text-wrapper-2,
-        .v-ctor-p-rez-ortega {
+        .text-wrapper-2 {
           font-size: 0.95rem;
         }
 
         .image,
         .forevergames {
           max-height: 60px;
+        }
+
+        .div-2 {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .img {
+          max-width: 100px;
         }
       }
     </style>
@@ -147,7 +154,7 @@
             <img class="image" src="image.png" alt="Logo 1" />
             <img class="forevergames" src="forevergames.png" alt="Logo 2" />
           </div>
-          <p class="text-wrapper">Recreation of the 1982 arcade Pengo/p>
+          <p class="text-wrapper">Recreation of the 1982 arcade Pengo</p>
         </header>
 
         <div class="main">
@@ -155,27 +162,29 @@
             <div class="div">Game Description</div>
             <p class="text-wrapper-2">
               Pengo is a tribute to the classic arcade game originally developed by Sega in 1982. In the game, the player takes control of a penguin trapped in a maze made of ice blocks. The main objective is to push these blocks to crush the enemies known as "Sno-Bees" while avoiding being caught by them. This version has been recreated using C++ and the Raylib graphics library. It includes core mechanics from the original game along with modern features such as visual debugging tools (colliders, active zones, etc.) to support development and testing. The project was developed as part of an academic assignment at UPC and aims to combine retro gameplay with improved design and functionality.
-
-
             </p>
           </div>
 
           <div class="section">
             <div class="div">Team</div>
             <div class="div-2">
-              <p class="v-ctor-p-rez-ortega">
-                <p><strong>Víctor Pérez Ortega:</strong> <br /> 
-                - Movimiento del jugador, IA de enemigos, lógica de colisiones. <br /> 
-                - Implementación de sonidos y música del juego (menú, victoria, derrota). <br />   
-                - Animaciones (romper bloques, enemigos), condiciones de victoria y derrota. <br /> 
-                - Creación y diseño de la web del proyecto. <br />
-                <p><strong>Mario Torrents Rodríguez:</strong> <br /> 
-                - Programación de enemigos y comportamiento (push, muerte, apariciones). <br /> 
-                - Diseño de niveles, sistema de puntuación y depuración visual. <br /> 
-                - Implementación de tilemaps, hitboxes y ajustes de mapa. <br /> 
-                - Estructuración general del proyecto y control de versiones.<br />
-                <p><strong>Vladimir Solosev:</strong> random generation of maps & video
-              </p>
+              <div class="text-wrapper-2">
+                <p><strong>Víctor Pérez Ortega:</strong><br>
+                  – Movimiento del jugador, IA de enemigos, lógica de colisiones.<br>
+                  – Implementación de sonidos y música del juego (menú, victoria, derrota).<br>
+                  – Animaciones (romper bloques, enemigos), condiciones de victoria y derrota.<br>
+                  – Creación y diseño de la web del proyecto.
+                </p>
+                <p><strong>Mario Torrents Rodríguez:</strong><br>
+                  – Programación de enemigos y comportamiento (push, muerte, apariciones).<br>
+                  – Diseño de niveles, sistema de puntuación y depuración visual.<br>
+                  – Implementación de tilemaps, hitboxes y ajustes de mapa.<br>
+                  – Estructuración general del proyecto y control de versiones.
+                </p>
+                <p><strong>Vladimir Solosev:</strong><br>
+                  Random generation of maps & video.
+                </p>
+              </div>
               <img class="img" src="forevergames1.png" alt="Team image" />
             </div>
           </div>
@@ -195,14 +204,13 @@
               ></iframe>
             </div>
           </div>
-          
+
           <div class="section">
             <div class="div">Download link</div>
             <div class="text-wrapper-2">
               <a href="pengo-final.zip" download>Click here to download</a>
             </div>
           </div>
-
         </div>
       </div>
     </div>
